@@ -8,10 +8,8 @@
             "email": "maixuantien241294@gmail.com"
         }
     ],
-    
+
     "require": {
-        "php": ">=7.0.0",
-        "illuminate/support": "~5.0",
         "its404/php-puppeteer": "^0.1.1"
     },
     "autoload": {
