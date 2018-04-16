@@ -16,13 +16,5 @@
         "psr-4": {
             "Tienmx\\Crawler\\": "src/"
         }
-    },
-    "extra": {
-        "component": "package",
-        "laravel": {
-            "providers": [
-                "Tienmx\\Crawler\\CrawlerServiceProvider"
-            ]
-        }
     }
 }
