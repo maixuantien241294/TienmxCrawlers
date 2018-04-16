@@ -20,9 +20,6 @@
     },
     "extra": {
         "component": "package",
-        "branch-alias": {
-            "dev-master": "1.0"
-        },
         "laravel": {
             "providers": [
                 "Tienmx\\Crawler\\CrawlerServiceProvider"
