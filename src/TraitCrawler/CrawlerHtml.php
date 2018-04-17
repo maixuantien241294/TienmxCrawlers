@@ -84,9 +84,9 @@ class CrawlerHtml
         $htmlString = $domDocument->saveHTML();
 
         $htmlString = htmlspecialchars_decode($this->removeValue($valueRemove, '', htmlspecialchars($htmlString)));
-        $trim_off_front = strpos($htmlString, '<body>') + 6;
-        $trim_off_end = (strrpos($htmlString, '</body>')) - strlen($htmlString);
-        $htmlString = substr($htmlString, $trim_off_front, $trim_off_end);
+        // $trim_off_front = strpos($htmlString, '<body>') + 6;
+        // $trim_off_end = (strrpos($htmlString, '</body>')) - strlen($htmlString);
+        // $htmlString = substr($htmlString, $trim_off_front, $trim_off_end);
         return $htmlString;
     }
 }
