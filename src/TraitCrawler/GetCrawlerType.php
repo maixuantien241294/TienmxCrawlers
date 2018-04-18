@@ -36,9 +36,6 @@ class GetCrawlerType
     {
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         try {
-            $html = new \DOMDocument();
-            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
-            $xpath = new \DOMXPath($html);
             $temp = [];
             foreach ($rules as $k => $val) {
                 $htmlString = "";
@@ -47,33 +44,33 @@ class GetCrawlerType
                 $valueRemoveBlock = $val['value_remove_block'];
                 switch ($val['type']) {
                     case $this->text:
-                        $query = $val['value'] . '/text()';
+                        $query = $val['value'];
                         $cText = new CrawlerText();
-                        $htmlString = $cText->executeText($xpath, $query, $valueRemove);
+                        $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
                         break;
                     case $this->plaintext:
-                        $query = $val['value'] . '/text()';
+                        $query = $val['value'];
                         $cText = new CrawlerText();
-                        $htmlString = $cText->executeText($xpath, $query, $valueRemove);
+                        $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
                         break;
                     case $this->price:
-                        $query = $val['value'] . '/text()';
+                        $query = $val['value'];
                         $cPrice = new CrawlerPrice();
-                        $htmlString = $cPrice->executePrice($xpath, $query, $valueRemove);
+                        $htmlString = $cPrice->executePrice($contentHtml, $query, $valueRemove);
                         break;
                     case $this->html:
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
-                        $htmlString = $cHtml->executeHtml($html, $xpath, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
                         break;
                     case $this->src:
                         $cSrc = new CrawlerSrc();
-                        $htmlString = $cSrc->executeSrc($xpath, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                        $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
                         break;
                     case $this->content:
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
-                        $htmlString = $cHtml->executeHtml($html, $xpath, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;

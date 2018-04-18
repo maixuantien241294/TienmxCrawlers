@@ -8,6 +8,7 @@
 
 namespace Tienmx\Crawler\TraitCrawler;
 
+use Sunra\PhpSimple\HtmlDomParser;
 
 class CrawlerHtml
 {
@@ -15,18 +16,56 @@ class CrawlerHtml
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
-    public function executeHtml($html, $xpath, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock,$download)
+    public function executeHtml($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download)
     {
+        $check = $this->checkXpath($rule);
         $htmlString = "";
-        $ruleParse = $this->getRules($rule);
-        $nodelist = $xpath->evaluate($ruleParse);
-        foreach ($nodelist as $key => $item) {
-            $htmlStringFirst = $html->saveHTML($item);
+        if ($check === false) {
+            $htmlString = $this->parseDom($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
+        } else {
+            $htmlString = $this->parseXpath($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
         }
-        $domDocument = new \DOMDocument('1.0', 'UTF-8');
-        @$domDocument->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $htmlStringFirst);
-        $xpathEnd = new \DOMXPath($domDocument);
+        /**
+         * @remove by dom or expath
+         */
 
+        if (!empty($valueRemoveXpath)) {
+
+            $checkRemove = $this->checkXpath($valueRemoveXpath);
+            if ($checkRemove === false) {
+                $htmlString = $this->removeDom($htmlString, $valueRemoveXpath);
+            } else {
+                $htmlString = $this->removeXpath($htmlString, $valueRemoveXpath);
+            }
+        }
+        if(!empty($valueRemove)){
+            $htmlString = $this->removeValue($valueRemove, '', $htmlString);
+        }
+
+        return $htmlString;
+    }
+
+    protected function removeDom($contentHtml, $valueRemoveXpath)
+    {
+        $valueXpath = explode(',', $valueRemoveXpath);
+        $html1 = HtmlDomParser::str_get_html($contentHtml);
+        for ($i = 0; $i < count($valueXpath); $i++) {
+            $query = $html1->find($valueXpath[$i]);
+            if (count($query) > 0) {
+                foreach ($query as $value) {
+                    $value->outertext = '';
+                }
+            }
+        }
+        $contentHtml = $html1->save();
+        return $contentHtml;
+    }
+
+    protected function removeXpath($contentHtml, $valueRemoveXpath)
+    {
+        $domDocument = new \DOMDocument('1.0', 'UTF-8');
+        @$domDocument->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
+        $xpathEnd = new \DOMXPath($domDocument);
         /**
          * @desc remove by xpath
          */
@@ -41,8 +80,66 @@ class CrawlerHtml
                         }
                     }
                 }
+                $contentHtml = $domDocument->saveHTML();
             }
         }
+        return $contentHtml;
+    }
+
+    public function parseDom($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock)
+    {
+        // $rule = 'div#top-banner-and-menu  div[class=container]  div[class=row single-product]  div[class=col-xs-12 col-sm-12 col-md-9 homebanner-holder]  div[class=detail-block]  div[class=row]  div[class=col-sm-6]  div  div  p  span  span  span';
+        $dom = HtmlDomParser::str_get_html($contentHtml);
+        $element = $dom->find($rule);
+        $html = "";
+        if (count($element) > 0) {
+
+            foreach ($element as $item) {
+                $html .= $item->outertext();
+            }
+            $html = html_entity_decode($html);
+        }
+
+        $tagsSrc = empty($tagsSrc) ? 'src' : $tagsSrc;
+        $tagsSrc = explode(',', $tagsSrc);
+        for ($j = 0; $j < count($tagsSrc); $j++) {
+            $html1 = HtmlDomParser::str_get_html($html);
+            if ($html1 != false) {
+                $listImg = $html1->find('img');
+                if (count($listImg) > 0) {
+                    foreach ($listImg as $key => $item) {
+                        $oldImg = $item->getAttribute($tagsSrc[$j]);
+                        if (!empty($oldImg)) {
+                            $item->setAttribute('src', $oldImg);
+                        }
+                    }
+                }
+                $html = $html1->save();
+            }
+        }
+        /*
+         * @desc end download ảnh
+         */
+        return $html;
+    }
+
+    public function parseXpath($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock)
+    {
+        $htmlString = "";
+        $html = new \DOMDocument();
+        @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
+        $xpath = new \DOMXPath($html);
+
+        $ruleParse = $this->getRules($rule);
+        $nodelist = $xpath->evaluate($ruleParse);
+        foreach ($nodelist as $key => $item) {
+            $htmlStringFirst = $html->saveHTML($item);
+        }
+        $domDocument = new \DOMDocument('1.0', 'UTF-8');
+        @$domDocument->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $htmlStringFirst);
+        $xpathEnd = new \DOMXPath($domDocument);
+
+
         /**
          * @desc lấy tất cả các ảnh theo tagsrc
          */
@@ -53,21 +150,9 @@ class CrawlerHtml
             foreach ($listImg as $key => $item) {
                 $oldImg = $listImg->item($key)->getAttribute($tagsSrc[$j]);
 
-                if(!empty($oldImg)){
-                    if($download == $this->isDownload){
-                        $oneDot = explode('.', $oldImg);
-                        $ext = end($oneDot);
-                        $respone = $this->download($oldImg, 'content', $ext);
-                        if ($respone['errors'] === false) {
-                            $newImg = $respone['msg'];
-                            $listImg->item($key)->setAttribute($tagsSrc[$j], $newImg);
-                        }
-                    }else{
-                        $listImg->item($key)->setAttribute('src', $oldImg);
-                    }
+                if (!empty($oldImg)) {
+                    $listImg->item($key)->setAttribute('src', $oldImg);
                 }
-
-
             }
         }
         /*
@@ -83,7 +168,7 @@ class CrawlerHtml
 
         $htmlString = $domDocument->saveHTML();
 
-        $htmlString = htmlspecialchars_decode($this->removeValue($valueRemove, '', htmlspecialchars($htmlString)));
+        //$htmlString = htmlspecialchars_decode($this->removeValue($valueRemove, '', htmlspecialchars($htmlString)));
         // $trim_off_front = strpos($htmlString, '<body>') + 6;
         // $trim_off_end = (strrpos($htmlString, '</body>')) - strlen($htmlString);
         // $htmlString = substr($htmlString, $trim_off_front, $trim_off_end);

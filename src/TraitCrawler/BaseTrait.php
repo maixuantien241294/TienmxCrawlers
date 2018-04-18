@@ -27,14 +27,23 @@ trait BaseTrait
 
     public function removeValue($search, $replace, $string)
     {
+
         $search = explode(',', $search);
         $result = $string;
         if (is_array($search) || is_object($search) || !empty($search)) {
             foreach ($search as $value_search) {
-                $result = str_replace(mb_strtolower($value_search), mb_strtolower($replace), mb_strtolower($result));
+                $value_search = trim($value_search);
+                $lower = mb_strtolower($value_search);
+                $uper = mb_strtoupper($value_search);
+                $upperFirst = ucfirst(strtolower($value_search));
+                $uc = ucwords(strtolower($value_search));
+                $arrayReplace = [$lower, $uper, $upperFirst, $uc];
+                for($i=0;$i<count($arrayReplace);$i++){
+                    $result = str_replace($arrayReplace[$i], $replace, $result);
+                }
+
             }
         }
-
         return $result;
     }
 
@@ -87,7 +96,6 @@ trait BaseTrait
             return $ex->getMessage();
         }
     }
-
 
 
     public function addJsContent($data = array(), $content)
@@ -143,5 +151,15 @@ trait BaseTrait
         $str = str_replace(' ', '-', $str);
         $str = mb_strtolower($str);
         return $str;
+    }
+
+    public function checkXpath($rule)
+    {
+        $check = true;
+        $strFirst = substr($rule, 0, 1);
+        if (!empty($strFirst) && $strFirst != '/') {
+            $check = false;
+        }
+        return $check;
     }
 }

@@ -8,6 +8,7 @@
 
 namespace Tienmx\Crawler\TraitCrawler;
 
+use Sunra\PhpSimple\HtmlDomParser;
 
 class CrawlerCateTrait
 {
@@ -35,28 +36,53 @@ class CrawlerCateTrait
         if (count($explodeLink) === 4) {
             $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
         }
-
-        $html = new \DOMDocument();
-        @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-        $crawler = new \DOMXPath($html);
-        $nodelist = $crawler->query($this->rules);
+        /**
+         * @desc Check is dom or xpath
+         */
+        $check = $this->checkXpath($this->rules);
         $temp = [];
-        if ($nodelist->length > 0) {
-            foreach ($nodelist as $item) {
-
-                $href = $item->getAttribute('href');
-                if (!preg_match('/' . $this->domain . '/', $href, $match)
-                    && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                    $href = $this->linkWebsite . $href;
+        if ($check === false) {
+            //parse by DOM
+            //$this->rules = 'div#mc-horizontal-menu-collapse[class=navbar-collapse collapse] div[class=nav-outer] ul[class=nav navbar-nav] li a';
+            $dom = HtmlDomParser::str_get_html($content);
+            $element = $dom->find($this->rules);
+            if (!empty($element)) {
+                foreach ($element as $item) {
+                    $attr = $item->attr;
+                    $href = isset($attr['href']) ? $attr['href'] : "";
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        $href = $this->linkWebsite . $href;
+                    }
+                    $data = [
+                        'href' => $href,
+                        'text' => $item->text(),
+                    ];
+                    array_push($temp, $data);
                 }
-                $dataParser = [
-                    'href' => $href,
-                    'text' => trim($item->nodeValue),
-                ];
-                array_push($temp, $dataParser);
+            }
+        } else {
+            $html = new \DOMDocument();
+            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+            $crawler = new \DOMXPath($html);
+            $nodelist = $crawler->query($this->rules);
+
+            if ($nodelist->length > 0) {
+                foreach ($nodelist as $item) {
+
+                    $href = $item->getAttribute('href');
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        $href = $this->linkWebsite . $href;
+                    }
+                    $dataParser = [
+                        'href' => $href,
+                        'text' => trim($item->nodeValue),
+                    ];
+                    array_push($temp, $dataParser);
+                }
             }
         }
-
         return $temp;
     }
 
@@ -66,35 +92,76 @@ class CrawlerCateTrait
      */
     public function parseRuleItemByCategory($content)
     {
-
-        $html = new \DOMDocument();
-        @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-
-        $crawler = new \DOMXPath($html);
-        $nodelist = $crawler->query($this->rules);
+        /**
+         * @remove '/' cuối của $linkWebsite
+         */
+        $explodeLink = explode('/', $this->linkWebsite);
+        if (count($explodeLink) === 4) {
+            $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
+        }
+        /**
+         * @desc Check is dom or xpath
+         */
+        $check = $this->checkXpath($this->rules);
         $temp = [];
 
-        if ($nodelist->length > 0) {
-            foreach ($nodelist as $item) {
-                $href = $item->getAttribute('href');
-                $explodeLink = explode('/', $this->linkWebsite);
-                if (count($explodeLink) === 4) {
-                    $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
-                }
-                if (!preg_match('/' . $this->domain . '/', $href, $match)
-                    && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                    $href = $this->linkWebsite . $href;
-                }
-                $title = trim($item->getAttribute('title'));
+        if ($check === false) {
 
-                $dataParser = [
-                    'href' => $href,
-                    'text' => empty($title) ? trim($item->nodeValue) : $title,
-                ];
-                array_push($temp, $dataParser);
+            //parse theo DOM
+            //$this->rules = 'div#grid-container[class=tab-pane active]  div[class=category-product]  div[class=row]  div[class=col-sm-6]  div[class=products]  div[class=product]  div  h3  a';
+            $dom = HtmlDomParser::str_get_html($content);
+            $element = $dom->find($this->rules);
+            if (count($element) > 0) {
+                foreach ($element as $item) {
+                    $href = $item->getAttribute('href');
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        $href = $this->linkWebsite . $href;
+                    }
+                    $dataParser = [
+                        'href' => $href,
+                        'text' => $item->text(),
+                    ];
+                    array_push($temp, $dataParser);
+                }
+            }
+        } else {
+
+            $html = new \DOMDocument();
+            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+
+            $crawler = new \DOMXPath($html);
+            $nodelist = $crawler->query($this->rules);
+
+            if ($nodelist->length > 0) {
+                foreach ($nodelist as $item) {
+                    $href = $item->getAttribute('href');
+
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        $href = $this->linkWebsite . $href;
+                    }
+                    $title = trim($item->getAttribute('title'));
+
+                    $dataParser = [
+                        'href' => $href,
+                        'text' => empty($title) ? trim($item->nodeValue) : $title,
+                    ];
+                    array_push($temp, $dataParser);
+                }
             }
         }
+
         return $temp;
     }
 
+    public function checkXpath($rule)
+    {
+        $check = true;
+        $strFirst = substr($rule, 0, 1);
+        if (!empty($strFirst) && $strFirst != '/') {
+            $check = false;
+        }
+        return $check;
+    }
 }
