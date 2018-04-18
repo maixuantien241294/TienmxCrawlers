@@ -91,7 +91,7 @@ trait CrawlerTypeTrait
          * @desc Thêm params in trong header
          */
         if (!empty($newHeader)) {
-            $newExplodeHead = explode(',', $newHeader);
+            $newExplodeHead = explode('|', $newHeader);
             $head = array_merge($head, $newExplodeHead);
         }
         $head = array_unique($head);
@@ -99,7 +99,7 @@ trait CrawlerTypeTrait
          * @desc Thêm params trong userAgents
          */
         if (!empty($newUserAgents)) {
-            $newExplodeUserAgents = explode(',', $newUserAgents);
+            $newExplodeUserAgents = explode('|', $newUserAgents);
             $userAgents = array_merge($userAgents, $newExplodeUserAgents);
         }
         $userAgents = array_unique($userAgents);
