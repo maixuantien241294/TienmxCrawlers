@@ -24,7 +24,10 @@ class CrawlerText
         } else {
             $htmlString = $this->parseDom($contentHtml, $rule, $valueRemove);
         }
-
+        
+        if(!empty($valueRemove)){
+            $htmlString = $this->removeValue($valueRemove, '', $htmlString);
+        }
         return $htmlString;
     }
 
