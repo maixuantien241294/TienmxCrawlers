@@ -109,7 +109,12 @@ class CrawlerHtml
                 if (count($listImg) > 0) {
                     foreach ($listImg as $key => $item) {
                         $oldImg = $item->getAttribute($tagsSrc[$j]);
+
                         if (!empty($oldImg)) {
+                            if (!preg_match('/' . $domain . '/', $oldImg, $match)
+                                && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
+                                $oldImg = $linkWebsite . $oldImg;
+                            }
                             $item->setAttribute('src', $oldImg);
                         }
                     }
@@ -151,6 +156,10 @@ class CrawlerHtml
                 $oldImg = $listImg->item($key)->getAttribute($tagsSrc[$j]);
 
                 if (!empty($oldImg)) {
+                    if (!preg_match('/' . $domain . '/', $oldImg, $match)
+                        && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
+                        $oldImg = $linkWebsite . $oldImg;
+                    }
                     $listImg->item($key)->setAttribute('src', $oldImg);
                 }
             }
