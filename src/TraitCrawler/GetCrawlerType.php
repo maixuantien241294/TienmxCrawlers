@@ -123,12 +123,16 @@ class GetCrawlerType
                     }
                     $content = $respone['content'];
             }
+//
             if (empty($content)) {
                 return $return;
             }
             /**
              * @author lưu file
              */
+
+            $content = str_replace('window.parent != window','window.parent == window',$content);
+//            dd($contentFull);
             $link = $this->addJsContent($data, $content);
             $return['message'] = $link;
             $return['error'] = false;
