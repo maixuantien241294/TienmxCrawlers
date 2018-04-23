@@ -46,7 +46,7 @@ class CrawlerCateTrait
             $content = trim($content);
 
             $dom = HtmlDomParser::str_get_html($content);
-            if($dom != false){
+            if ($dom != false) {
                 $element = $dom->find($this->rules);
                 if (!empty($element)) {
                     foreach ($element as $item) {
@@ -55,6 +55,10 @@ class CrawlerCateTrait
                         if (!preg_match('/' . $this->domain . '/', $href, $match)
                             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                             $href = $this->linkWebsite . $href;
+                        }else{
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                                $href = "http:" . $href;
+                            }
                         }
                         $data = [
                             'href' => $href,
@@ -73,11 +77,14 @@ class CrawlerCateTrait
 
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $item) {
-
                     $href = $item->getAttribute('href');
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
+                    } else {
+                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                            $href = "http:" . $href;
+                        }
                     }
                     $dataParser = [
                         'href' => $href,
@@ -121,6 +128,10 @@ class CrawlerCateTrait
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
+                    }else{
+                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                            $href = "http:" . $href;
+                        }
                     }
                     $dataParser = [
                         'href' => $href,
@@ -144,6 +155,10 @@ class CrawlerCateTrait
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
+                    }else{
+                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                            $href = "http:" . $href;
+                        }
                     }
                     $title = trim($item->getAttribute('title'));
 
