@@ -109,6 +109,7 @@ trait BaseTrait
          * @desc replace link css
          */
         $header = '<base href="' . $link . '" target="_blank">';
+//        $content = str_replace('<head[^>]*id=\"(.*?)\">', '<head>' . $header, $content);
         $content = str_replace('<head>', '<head>' . $header, $content);
         $dataHeader = '<link rel="stylesheet" type="text/css" href="' . env('APP_DOMAIN', '') . 'getruler/inject.css?=v' . VERSION . '">';
         $dataHeader .= '<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>';
@@ -161,5 +162,9 @@ trait BaseTrait
             $check = false;
         }
         return $check;
+    }
+    public function validImage($file) {
+        $size = getimagesize($file);
+        return (strtolower(substr($size['mime'], 0, 5)) == 'image' ? true : false);
     }
 }

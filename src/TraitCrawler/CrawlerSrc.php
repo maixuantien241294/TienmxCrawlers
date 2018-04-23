@@ -57,7 +57,19 @@ class CrawlerSrc
         if (count($element)) {
             foreach ($element as $item) {
                 for ($i = 0; $i < count($tagsSrc); $i++) {
-                    $image = $item->getAttribute($tagsSrc[$i]);
+                    if ($tagsSrc[$i] == 'style') {
+                        $style = $item->getAttribute('style');
+                        $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
+                        preg_match($regex, $style, $matches);
+                        if (isset($matches) && count($matches) > 0) {
+                            $image = isset($matches[2]) ? $matches[2] : "";
+                            if (!empty($image)) {
+                                $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                            }
+                        }
+                    } else {
+                        $image = $item->getAttribute($tagsSrc[$i]);
+                    }
                     if (!empty($image)) {
                         if (!preg_match('/' . $domain . '/', $image, $match)
                             && empty(parse_url($image, PHP_URL_HOST)) && !empty($image)) {
@@ -90,13 +102,22 @@ class CrawlerSrc
         $ruleParse = $this->getRules($rule);
         $tagsSrc = explode(',', $tagsSrc);
         foreach ($tagsSrc as $item) {
+
             $ruleImg = $ruleParse . '/@' . $item;
             $nodelist = $xpath->query($ruleImg);
             if ($nodelist->length > 0) {
-
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
-
+                    if($item == 'style'){
+                        $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
+                        preg_match($regex, $image, $matches);
+                        if (isset($matches) && count($matches) > 0) {
+                            $image = isset($matches[2]) ? $matches[2] : "";
+                            if (!empty($image)) {
+                                $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                            }
+                        }
+                    }
                     if (!preg_match('/' . $domain . '/', $image, $match)
                         && empty(parse_url($image, PHP_URL_HOST)) && !empty($image)) {
                         $image = $linkWebsite . $image;

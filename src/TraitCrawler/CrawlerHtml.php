@@ -38,7 +38,7 @@ class CrawlerHtml
                 $htmlString = $this->removeXpath($htmlString, $valueRemoveXpath);
             }
         }
-        if(!empty($valueRemove)){
+        if (!empty($valueRemove)) {
             $htmlString = $this->removeValue($valueRemove, '', $htmlString);
         }
 
@@ -102,26 +102,29 @@ class CrawlerHtml
 
         $tagsSrc = empty($tagsSrc) ? 'src' : $tagsSrc;
         $tagsSrc = explode(',', $tagsSrc);
-        for ($j = 0; $j < count($tagsSrc); $j++) {
-            $html1 = HtmlDomParser::str_get_html($html);
-            if ($html1 != false) {
-                $listImg = $html1->find('img');
-                if (count($listImg) > 0) {
-                    foreach ($listImg as $key => $item) {
-                        $oldImg = $item->getAttribute($tagsSrc[$j]);
 
+        $html1 = HtmlDomParser::str_get_html($html);
+        if ($html1 != false) {
+            $listImg = $html1->find('img');
+            if (count($listImg) > 0) {
+                foreach ($listImg as $key => $item) {
+                    for ($j = 0; $j < count($tagsSrc); $j++) {
+                        $oldImg = $item->getAttribute($tagsSrc[$j]);
                         if (!empty($oldImg)) {
                             if (!preg_match('/' . $domain . '/', $oldImg, $match)
                                 && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
                                 $oldImg = $linkWebsite . $oldImg;
+                                if ($this->validImage($oldImg)) {
+                                    $item->setAttribute('src', $oldImg);
+                                }
                             }
-                            $item->setAttribute('src', $oldImg);
                         }
                     }
                 }
-                $html = $html1->save();
             }
+            $html = $html1->save();
         }
+
         /*
          * @desc end download ảnh
          */
@@ -150,9 +153,10 @@ class CrawlerHtml
          */
         $tagsSrc = empty($tagsSrc) ? 'src' : $tagsSrc;
         $tagsSrc = explode(',', $tagsSrc);
-        for ($j = 0; $j < count($tagsSrc); $j++) {
-            $listImg = $xpathEnd->query('//img');
-            foreach ($listImg as $key => $item) {
+
+        $listImg = $xpathEnd->query('//img');
+        foreach ($listImg as $key => $item) {
+            for ($j = 0; $j < count($tagsSrc); $j++) {
                 $oldImg = $listImg->item($key)->getAttribute($tagsSrc[$j]);
 
                 if (!empty($oldImg)) {
@@ -160,7 +164,10 @@ class CrawlerHtml
                         && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
                         $oldImg = $linkWebsite . $oldImg;
                     }
-                    $listImg->item($key)->setAttribute('src', $oldImg);
+                    if ($this->validImage($oldImg)) {
+                        $listImg->item($key)->setAttribute('src', $oldImg);
+                    }
+
                 }
             }
         }
@@ -183,4 +190,6 @@ class CrawlerHtml
         // $htmlString = substr($htmlString, $trim_off_front, $trim_off_end);
         return $htmlString;
     }
+
+
 }
