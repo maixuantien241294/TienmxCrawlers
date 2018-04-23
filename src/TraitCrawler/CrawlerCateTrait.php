@@ -42,29 +42,33 @@ class CrawlerCateTrait
         $check = $this->checkXpath($this->rules);
         $temp = [];
         if ($check === false) {
-            //parse by DOM
-            //$this->rules = 'div#mc-horizontal-menu-collapse[class=navbar-collapse collapse] div[class=nav-outer] ul[class=nav navbar-nav] li a';
+            $content = str_replace("\n", '', $content);
+            $content = trim($content);
+
             $dom = HtmlDomParser::str_get_html($content);
-            $element = $dom->find($this->rules);
-            if (!empty($element)) {
-                foreach ($element as $item) {
-                    $attr = $item->attr;
-                    $href = isset($attr['href']) ? $attr['href'] : "";
-                    if (!preg_match('/' . $this->domain . '/', $href, $match)
-                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                        $href = $this->linkWebsite . $href;
+            if($dom != false){
+                $element = $dom->find($this->rules);
+                if (!empty($element)) {
+                    foreach ($element as $item) {
+                        $attr = $item->attr;
+                        $href = isset($attr['href']) ? $attr['href'] : "";
+                        if (!preg_match('/' . $this->domain . '/', $href, $match)
+                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                            $href = $this->linkWebsite . $href;
+                        }
+                        $data = [
+                            'href' => $href,
+                            'text' => $item->text(),
+                        ];
+                        array_push($temp, $data);
                     }
-                    $data = [
-                        'href' => $href,
-                        'text' => $item->text(),
-                    ];
-                    array_push($temp, $data);
                 }
             }
         } else {
             $html = new \DOMDocument();
             @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
             $crawler = new \DOMXPath($html);
+
             $nodelist = $crawler->query($this->rules);
 
             if ($nodelist->length > 0) {
