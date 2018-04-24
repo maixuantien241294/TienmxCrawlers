@@ -20,7 +20,9 @@ class GetCrawlerType
     public $src = 'src';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
-    public $crawlerPhantomjs = 3;
+    public $crawlerPhantomjs = 4;
+    public $crawlerPuppeteer = 3;
+    public $crawlerNightmare = 5;
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
@@ -116,7 +118,21 @@ class GetCrawlerType
                     $content = $this->getCrawlerGetContent($data);
                     break;
                 case  $this->crawlerPhantomjs:
-                    $respone = $this->crawlerByPhatom($data);
+                    $respone = $this->crawlerByPhantomjs($data);
+                    if ($respone['errors'] == true) {
+                        $return['message'] = 'Không lấy được dữ liệu';
+                        return $return;
+                    }
+                    $content = $respone['content'];
+                case $this->crawlerPuppeteer:
+                    $respone = $this->crawlerByPuppeteer($data);
+                    if ($respone['errors'] == true) {
+                        $return['message'] = 'Không lấy được dữ liệu';
+                        return $return;
+                    }
+                    $content = $respone['content'];
+                case $this->crawlerNightmare:
+                    $respone = $this->crawlerByNightmare($data);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;
@@ -131,7 +147,7 @@ class GetCrawlerType
              * @author lưu file
              */
 
-            $content = str_replace('window.parent != window','window.parent == window',$content);
+            $content = str_replace('window.parent != window', 'window.parent == window', $content);
 //            dd($contentFull);
             $link = $this->addJsContent($data, $content);
             $return['message'] = $link;

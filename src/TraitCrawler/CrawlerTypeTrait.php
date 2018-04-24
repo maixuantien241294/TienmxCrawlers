@@ -9,6 +9,8 @@
 namespace Tienmx\Crawler\TraitCrawler;
 
 
+use Tienmx\Crawler\Nightmare\Nightmare;
+use Tienmx\Crawler\Phantomjs\Phantom;
 use Tienmx\Crawler\Puppeteer\Puppeteer;
 
 trait CrawlerTypeTrait
@@ -56,7 +58,7 @@ trait CrawlerTypeTrait
         return isset($content['content']) ? $content['content'] : "";
     }
 
-    public function crawlerByPhatom($data = array())
+    public function crawlerByPuppeteer($data = array())
     {
         $return = ['errors' => true, 'msg' => "", 'content' => ''];
         try {
@@ -78,6 +80,51 @@ trait CrawlerTypeTrait
         }
         return $return;
 
+    }
+
+    public function crawlerByPhantomjs($data = array())
+    {
+        $return = ['errors' => true, 'msg' => "", 'content' => ''];
+        try {
+            if (!isset($data['link'])) {
+                throw new \Exception('URL or HTML in configuration required', 400);
+            }
+
+            $browser = new Phantom();
+            $browser->isDebug = true;
+            $result = $browser->html($data);
+            if ($result['returnVal'] === 0) {
+                $content = $result['ouput'];
+                $content = implode('', $content);
+                $return['content'] = $this->addJsContent($data, $content);
+                $return['errors'] = false;
+            }
+        } catch (\Exception $exception) {
+            $return['msg'] = $exception->getMessage();
+        }
+        return $return;
+    }
+
+    public function crawlerByNightmare($data = array()){
+        $return = ['errors' => true, 'msg' => "", 'content' => ''];
+        try {
+            if (!isset($data['link'])) {
+                throw new \Exception('URL or HTML in configuration required', 400);
+            }
+
+            $browser = new Nightmare();
+            $browser->isDebug = true;
+            $result = $browser->html($data);
+            if ($result['returnVal'] === 0) {
+                $content = $result['ouput'];
+                $content = implode('', $content);
+                $return['content'] = $this->addJsContent($data, $content);
+                $return['errors'] = false;
+            }
+        } catch (\Exception $exception) {
+            $return['msg'] = $exception->getMessage();
+        }
+        return $return;
     }
 
     protected function __getContent($url, $data = array())
