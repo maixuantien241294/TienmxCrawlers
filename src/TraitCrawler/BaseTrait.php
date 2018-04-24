@@ -25,6 +25,20 @@ trait BaseTrait
         return $ruleParse;
     }
 
+    public function getRuleHtml($rule)
+    {
+        $listRule = [];
+
+        $ruleData = explode('|', $rule);
+        if (count($ruleData) > 0) {
+            for ($i = 0; $i < count($ruleData); $i++) {
+                $newRule = $this->getRules(trim($ruleData[$i]));
+                array_push($listRule, $newRule);
+            }
+        }
+        return $listRule;
+    }
+
     public function removeValue($search, $replace, $string)
     {
 
@@ -38,7 +52,7 @@ trait BaseTrait
                 $upperFirst = ucfirst(strtolower($value_search));
                 $uc = ucwords(strtolower($value_search));
                 $arrayReplace = [$lower, $uper, $upperFirst, $uc];
-                for($i=0;$i<count($arrayReplace);$i++){
+                for ($i = 0; $i < count($arrayReplace); $i++) {
                     $result = str_replace($arrayReplace[$i], $replace, $result);
                 }
 
@@ -163,7 +177,9 @@ trait BaseTrait
         }
         return $check;
     }
-    public function validImage($file) {
+
+    public function validImage($file)
+    {
         $size = getimagesize($file);
         return (strtolower(substr($size['mime'], 0, 5)) == 'image' ? true : false);
     }
