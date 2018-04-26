@@ -34,8 +34,8 @@ class Phantom
 
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
-        echo date('d-m-y H:i:s');
-        dd($fullCommand);
+        //echo date('d-m-y H:i:s');
+        //dd($fullCommand);
         if ($this->isDebug) {
         }
         exec($fullCommand, $output, $returnVal);
