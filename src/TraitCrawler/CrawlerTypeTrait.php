@@ -72,7 +72,7 @@ trait CrawlerTypeTrait
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
                 $content = implode('', $content);
-                $return['content'] = $this->addJsContent($data, $content);
+                $return['content'] = $content;
                 $return['errors'] = false;
             }
         } catch (\Exception $exception) {
@@ -91,12 +91,11 @@ trait CrawlerTypeTrait
             }
 
             $browser = new Phantom();
-            $browser->isDebug = true;
             $result = $browser->html($data);
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
                 $content = implode('', $content);
-                $return['content'] = $this->addJsContent($data, $content);
+                $return['content'] = $content;
                 $return['errors'] = false;
             }
         } catch (\Exception $exception) {
@@ -113,12 +112,11 @@ trait CrawlerTypeTrait
             }
 
             $browser = new Nightmare();
-            $browser->isDebug = true;
             $result = $browser->html($data);
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
                 $content = implode('', $content);
-                $return['content'] = $this->addJsContent($data, $content);
+                $return['content'] = $content;
                 $return['errors'] = false;
             }
         } catch (\Exception $exception) {

@@ -124,6 +124,7 @@ class GetCrawlerType
                         return $return;
                     }
                     $content = $respone['content'];
+                    break;
                 case $this->crawlerPuppeteer:
                     $respone = $this->crawlerByPuppeteer($data);
                     if ($respone['errors'] == true) {
@@ -131,6 +132,7 @@ class GetCrawlerType
                         return $return;
                     }
                     $content = $respone['content'];
+                    break;
                 case $this->crawlerNightmare:
                     $respone = $this->crawlerByNightmare($data);
                     if ($respone['errors'] == true) {
@@ -138,6 +140,7 @@ class GetCrawlerType
                         return $return;
                     }
                     $content = $respone['content'];
+                    break;
             }
 //
             if (empty($content)) {
@@ -148,7 +151,6 @@ class GetCrawlerType
              */
 
             $content = str_replace('window.parent != window', 'window.parent == window', $content);
-//            dd($contentFull);
             $link = $this->addJsContent($data, $content);
             $return['message'] = $link;
             $return['error'] = false;

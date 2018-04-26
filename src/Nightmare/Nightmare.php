@@ -4,6 +4,9 @@ namespace Tienmx\Crawler\Nightmare;
 
 class Nightmare
 {
+    public $executable;
+    public $config;
+    public $nodeBinary;
     public function __construct()
     {
         $this->config = [];
@@ -16,7 +19,6 @@ class Nightmare
         $this->nodePath = 'NODE_PATH=`npm root -g`';
         $this->nodeBinary = 'node';
         $this->executable = __DIR__ . '/js/index.js';
-        $this->isDebug = false;
     }
     public function html($config = [])
     {

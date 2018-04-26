@@ -9,6 +9,9 @@
 namespace Tienmx\Crawler\Phantomjs;
 class Phantom
 {
+    public $executable;
+    public $config;
+    public $nodeBinary;
     public function __construct()
     {
         $this->config = [];
@@ -20,8 +23,8 @@ class Phantom
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
         $this->nodeBinary = 'phantomjs';
+//        $this->executable = 'D:\OS\crawler\vendor\tienmx\crawlers\src\Phantomjs/js/index.js';
         $this->executable = __DIR__ . '/js/index.js';
-        $this->isDebug = false;
     }
 
     public function html($config = [])
@@ -35,9 +38,7 @@ class Phantom
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
         //echo date('d-m-y H:i:s');
-        //dd($fullCommand);
-        if ($this->isDebug) {
-        }
+//        dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
 
         $result = [
@@ -46,6 +47,7 @@ class Phantom
         ];
         return $result;
     }
+
     public function getParams($config = [])
     {
         $param = "";
@@ -55,7 +57,7 @@ class Phantom
                     $xpath = "";
                     $explode = explode(',', $config[$key]);
                     for ($i = 0; $i < count($explode); $i++) {
-                        $xpath .=  $key . '=' . $explode[$i] . ' ';
+                        $xpath .= $key . '=' . $explode[$i] . ' ';
                     }
                     $param .= $xpath;
                 } else {
@@ -68,6 +70,7 @@ class Phantom
         }
         return $param;
     }
+
     private static function merge($a, $b)
     {
         $res = $a;
