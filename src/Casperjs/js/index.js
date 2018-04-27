@@ -11,7 +11,6 @@ var link = casper.cli.get("link");
 var web_xpath_active = casper.cli.get("web_xpath_active");
 var web_xpath_active_detail = casper.cli.get("web_xpath_active_detail");
 var web_xpath_active_cate = casper.cli.get("web_xpath_active_cate");
-console.log(web_xpath_active);
 /**
  * kết thúc get params
  */

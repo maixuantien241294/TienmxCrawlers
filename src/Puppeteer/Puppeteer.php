@@ -61,7 +61,7 @@ class Puppeteer extends Browser
         $param = $this->getParams($config);
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->pageClickConfigJs) . ' ' . $param;
-        //dd($fullCommand);
+//        dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
         $result = [
             'ouput' => $output,

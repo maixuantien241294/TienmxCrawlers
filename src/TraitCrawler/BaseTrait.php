@@ -115,6 +115,7 @@ trait BaseTrait
     public function addJsContent($data = array(), $content)
     {
         $link = isset($data['link_website']) ? $data['link_website'] : $data['link'];
+        $link = $this->getUrl($link);
         $explodeLink = explode('/', $link);
         if (count($explodeLink) === 4) {
             $link = substr($link, 0, strlen($link) - 1);
@@ -182,5 +183,15 @@ trait BaseTrait
     {
         $size = getimagesize($file);
         return (strtolower(substr($size['mime'], 0, 5)) == 'image' ? true : false);
+    }
+
+    public function getUrl($link)
+    {
+        $url = $link;
+        $result = parse_url($link);
+        if (isset($result['scheme']) && isset($result['host'])) {
+            $url = $result['scheme'] . '://' . $result['host'];
+        }
+        return $url;
     }
 }

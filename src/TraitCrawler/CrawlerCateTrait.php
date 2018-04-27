@@ -27,72 +27,88 @@ class CrawlerCateTrait
      * @param $content
      * @return array
      */
-    public function parseRulesCategory($content)
+    public function parseRulesCategory($content, $paramsRemove = null)
     {
-        /**
-         * @remove '/' cuối của $linkWebsite
-         */
-        $explodeLink = explode('/', $this->linkWebsite);
-        if (count($explodeLink) === 4) {
-            $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
-        }
-        /**
-         * @desc Check is dom or xpath
-         */
-        $check = $this->checkXpath($this->rules);
-        $temp = [];
-        if ($check === false) {
-            $content = str_replace("\n", '', $content);
-            $content = trim($content);
+        try {
+            /**
+             * @remove '/' cuối của $linkWebsite
+             */
+            $this->linkWebsite = $this->get_url($this->linkWebsite);
+            $explodeLink = explode('/', $this->linkWebsite);
+            if (count($explodeLink) === 4) {
+                $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
+            }
+            /**
+             * @desc Check is dom or xpath
+             */
+            $check = $this->checkXpath($this->rules);
+            $temp = [];
+            if ($check === false) {
+                $content = str_replace("\n", '', $content);
+                $content = trim($content);
 
-            $dom = HtmlDomParser::str_get_html($content);
-            if ($dom != false) {
-                $element = $dom->find($this->rules);
-                if (!empty($element)) {
-                    foreach ($element as $item) {
-                        $attr = $item->attr;
-                        $href = isset($attr['href']) ? $attr['href'] : "";
+                $dom = HtmlDomParser::str_get_html($content);
+                if ($dom != false) {
+                    $element = $dom->find($this->rules);
+                    if (!empty($element)) {
+                        foreach ($element as $item) {
+                            $attr = $item->attr;
+                            $href = isset($attr['href']) ? $attr['href'] : "";
+                            if (!preg_match('/' . $this->domain . '/', $href, $match)
+                                && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                                $href = $this->linkWebsite . $href;
+                            } else {
+                                if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                                    $href = "http:" . $href;
+                                }
+                            }
+                            if (!empty($paramsRemove)) {
+                                $remove = explode(',', $paramsRemove);
+                                if (!empty($remove)) {
+                                    $href = $this->formatLink($href, $remove);
+                                }
+                            }
+                            $data = [
+                                'href' => $href,
+                                'text' => $item->text(),
+                            ];
+                            array_push($temp, $data);
+                        }
+                    }
+                }
+            } else {
+                $html = new \DOMDocument();
+                @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+                $crawler = new \DOMXPath($html);
+
+                $nodelist = $crawler->query($this->rules);
+
+                if ($nodelist->length > 0) {
+                    foreach ($nodelist as $item) {
+                        $href = $item->getAttribute('href');
                         if (!preg_match('/' . $this->domain . '/', $href, $match)
                             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                             $href = $this->linkWebsite . $href;
-                        }else{
+                        } else {
                             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                 $href = "http:" . $href;
                             }
                         }
-                        $data = [
-                            'href' => $href,
-                            'text' => $item->text(),
-                        ];
-                        array_push($temp, $data);
-                    }
-                }
-            }
-        } else {
-            $html = new \DOMDocument();
-            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-            $crawler = new \DOMXPath($html);
-
-            $nodelist = $crawler->query($this->rules);
-
-            if ($nodelist->length > 0) {
-                foreach ($nodelist as $item) {
-                    $href = $item->getAttribute('href');
-                    if (!preg_match('/' . $this->domain . '/', $href, $match)
-                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                        $href = $this->linkWebsite . $href;
-                    } else {
-                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                            $href = "http:" . $href;
+                        $paramsRemove = explode('.', $paramsRemove);
+                        if ($paramsRemove) {
+                            $href = $this->formatLink($href, $paramsRemove);
                         }
+                        $dataParser = [
+                            'href' => $href,
+                            'text' => trim($item->nodeValue),
+                        ];
+                        array_push($temp, $dataParser);
                     }
-                    $dataParser = [
-                        'href' => $href,
-                        'text' => trim($item->nodeValue),
-                    ];
-                    array_push($temp, $dataParser);
                 }
             }
+        } catch (\Exception $exception) {
+            var_dump($exception->getTraceAsString());
+            dd($exception->getMessage());
         }
         return $temp;
     }
@@ -106,6 +122,7 @@ class CrawlerCateTrait
         /**
          * @remove '/' cuối của $linkWebsite
          */
+        $this->linkWebsite = $this->get_url($this->linkWebsite);
         $explodeLink = explode('/', $this->linkWebsite);
         if (count($explodeLink) === 4) {
             $this->linkWebsite = substr($this->linkWebsite, 0, strlen($this->linkWebsite) - 1);
@@ -128,7 +145,7 @@ class CrawlerCateTrait
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
-                    }else{
+                    } else {
                         if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                             $href = "http:" . $href;
                         }
@@ -155,7 +172,7 @@ class CrawlerCateTrait
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
-                    }else{
+                    } else {
                         if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                             $href = "http:" . $href;
                         }
@@ -182,5 +199,43 @@ class CrawlerCateTrait
             $check = false;
         }
         return $check;
+    }
+
+    public function get_url($link)
+    {
+        $url = $link;
+        $result = parse_url($link);
+        if (isset($result['scheme']) && isset($result['host'])) {
+            $url = $result['scheme'] . '://' . $result['host'];
+        }
+        return $url;
+    }
+
+    public function formatLink($url = '', $rm_query = [])
+    {
+        $result = $url;
+        $array_url = parse_url($url);
+        if (isset($array_url['scheme']) && isset($array_url['host'])) {
+            $result = $array_url['scheme'] . '://' . $array_url['host'];
+            if (isset($array_url['path'])) {
+                $result = $result . $array_url['path'];
+                if (isset($array_url['query'])) {
+                    $query = $array_url['query'];
+                    parse_str($query, $parameters);
+                    if (is_array($rm_query) && !empty($rm_query)) {
+                        foreach ($rm_query as $item_query) {
+                            if (isset($parameters[$item_query])) {
+                                unset($parameters[$item_query]);
+                            }
+                        }
+                        $query = http_build_query($parameters);
+                        if (!empty($query)) {
+                            $result .= '?' . $query;
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
     }
 }

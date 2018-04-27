@@ -37,6 +37,7 @@ class GetCrawlerType
 
     public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download)
     {
+        $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         try {
             $temp = [];

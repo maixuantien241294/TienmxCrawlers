@@ -30,7 +30,6 @@ class Casper
 
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
-        // dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
 
         $result = [
@@ -50,7 +49,7 @@ class Casper
         $param = $this->getParams($config);
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->pageClickConfigJs) . ' ' . $param;
-//        dd($fullCommand);
+
         exec($fullCommand, $output, $returnVal);
         $result = [
             'ouput' => $output,

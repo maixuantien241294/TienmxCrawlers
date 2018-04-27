@@ -117,14 +117,37 @@ class CrawlerHtml
                     for ($j = 0; $j < count($tagsSrc); $j++) {
                         $oldImg = $item->getAttribute($tagsSrc[$j]);
                         if (!empty($oldImg)) {
-                            if (!preg_match('/' . $domain . '/', $oldImg, $match)
-                                && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
-                                $oldImg = $linkWebsite . $oldImg;
-                                if ($this->validImage($oldImg)) {
-                                    $item->setAttribute('src', $oldImg);
+                            $newImg = "";
+                            if ($tagsSrc[$j] == 'style') {
+                                $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
+                                preg_match($regex, $image, $matches);
+                                if (isset($matches) && count($matches) > 0) {
+                                    $image = isset($matches[2]) ? $matches[2] : "";
+                                    if (!empty($image)) {
+                                        $newImg = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                                    }
+                                }
+                            } else {
+                                $newImg = $oldImg;
+                                if (!preg_match('/' . $domain . '/', $oldImg, $match)
+                                    && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
+                                    $newImg = $linkWebsite . $oldImg;
                                 }
                             }
+                            if (!empty($newImg)) {
+                                $item->setAttribute('src', $newImg);
+//                                $listImg->item($key)->setAttribute('src', $oldImg);
+                            }
                         }
+//                        if (!empty($oldImg)) {
+//                            if (!preg_match('/' . $domain . '/', $oldImg, $match)
+//                                && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
+//                                $oldImg = $linkWebsite . $oldImg;
+//                                if ($this->validImage($oldImg)) {
+//                                    $item->setAttribute('src', $oldImg);
+//                                }
+//                            }
+//                        }
                     }
                 }
             }
@@ -174,13 +197,14 @@ class CrawlerHtml
                                         }
                                     }
                                 } else {
+                                    $newImg = $oldImg;
                                     if (!preg_match('/' . $domain . '/', $oldImg, $match)
                                         && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
                                         $newImg = $linkWebsite . $oldImg;
                                     }
                                 }
                                 if (!empty($newImg)) {
-                                    $listImg->item($key)->setAttribute('src', $oldImg);
+                                    $listImg->item($key)->setAttribute('src', $newImg);
                                 }
                             }
                         }

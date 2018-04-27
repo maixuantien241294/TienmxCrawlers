@@ -8,7 +8,7 @@ async function scrapeInfiniteClickItems(page, itemTargetCount = 1000000, scrollD
         let previousHeight;
         let process = true;
         page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-        while (process && (items.length < itemTargetCount)) {
+        while (process && (items.length < 60)) {
             const name = params.pag_rule_cate;
             // console.log(name);
             items = await page.evaluate(({ name }) => {
