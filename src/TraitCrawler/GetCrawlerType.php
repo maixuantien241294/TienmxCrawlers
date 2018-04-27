@@ -23,6 +23,7 @@ class GetCrawlerType
     public $crawlerPhantomjs = 4;
     public $crawlerPuppeteer = 3;
     public $crawlerNightmare = 5;
+    public $crawlerCasper = 6;
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
@@ -135,6 +136,14 @@ class GetCrawlerType
                     break;
                 case $this->crawlerNightmare:
                     $respone = $this->crawlerByNightmare($data);
+                    if ($respone['errors'] == true) {
+                        $return['message'] = 'Không lấy được dữ liệu';
+                        return $return;
+                    }
+                    $content = $respone['content'];
+                    break;
+                case $this->crawlerCasper:
+                    $respone = $this->crawlerByCasper($data);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;

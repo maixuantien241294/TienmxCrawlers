@@ -21,14 +21,14 @@ async function scrapeInfiniteClickItems(page, itemTargetCount = 1000000, scrollD
             }
             return items;
 
-        }, { name });
-            if (await page.$(params.pag_dom_click) !== null) {
-                await page.click(params.pag_dom_click)
-                await page.waitFor(scrollDelay);
-            } else {
-                process = false;
+            }, { name });
+                if (await page.$(params.pag_dom_click) !== null) {
+                    await page.click(params.pag_dom_click)
+                    await page.waitFor(scrollDelay);
+                } else {
+                    process = false;
+                }
             }
-        }
 
     } catch (e) {
 

@@ -38,11 +38,15 @@ class Puppeteer extends Browser
             . escapeshellarg($this->executablehtml) . ' ' . $param;
         if ($this->isDebug) {
         }
-//        dd($fullCommand);
+        $startTime = date('d-m-y H:i:s');
+//        exec('casperjs "D:\OS\caspers\index.js" --link=https://www.dienthoaididong.com/ --link_website=https://www.chotot.com/ --domain=chotot.com --tagsSrc= --type=3', $output, $returnVal);
         exec($fullCommand, $output, $returnVal);
+        $endTime = date('d-m-y H:i:s');
         $result = [
             'ouput' => $output,
-            'returnVal' => $returnVal
+            'returnVal' => $returnVal,
+            'startTime' => $startTime,
+            'endTime'   =>  $endTime
         ];
         return $result;
     }
@@ -76,6 +80,7 @@ class Puppeteer extends Browser
         $param = $this->getParams($config);
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->pageCrollConfigJs) . ' ' . $param;
+
         exec($fullCommand, $output, $returnVal);
         $result = [
             'ouput' => $output,

@@ -1,12 +1,11 @@
 <?php
-
-namespace Tienmx\Crawler\Nightmare;
-
-class Nightmare
+namespace  Tienmx\Crawler\Casperjs;
+class Casper
 {
     public $executable;
     public $config;
     public $nodeBinary;
+    public $pageClickConfigJs;
     public function __construct()
     {
         $this->config = [];
@@ -17,8 +16,9 @@ class Nightmare
 
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
-        $this->nodeBinary = 'node';
+        $this->nodeBinary = 'casperjs';
         $this->executable = __DIR__ . '/js/index.js';
+        $this->pageClickConfigJs = __DIR__ . '/js/page-click.js';
     }
     public function html($config = [])
     {
@@ -30,7 +30,7 @@ class Nightmare
 
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
-//        dd($fullCommand);
+        dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
 
         $result = [
@@ -39,6 +39,26 @@ class Nightmare
         ];
         return $result;
     }
+
+    public function pageClick($config = [])
+    {
+        if (!isset($config['link'])) {
+            throw new \Exception('URL or HTML in configuration required', 400);
+        }
+
+        $this->config = $this->merge($this->config, $config);
+        $param = $this->getParams($config);
+        $fullCommand = $this->nodeBinary . ' '
+            . escapeshellarg($this->pageClickConfigJs) . ' ' . $param;
+//        dd($fullCommand);
+        exec($fullCommand, $output, $returnVal);
+        $result = [
+            'ouput' => $output,
+            'returnVal' => $returnVal
+        ];
+        return $result;
+    }
+    
     public function getParams($config = [])
     {
         $param = "";
@@ -48,19 +68,20 @@ class Nightmare
                     $xpath = "";
                     $explode = explode(',', $config[$key]);
                     for ($i = 0; $i < count($explode); $i++) {
-                        $xpath .=  $key . '=' . $explode[$i] . ' ';
+                        $xpath .= '--' . $key . '=' . $explode[$i] . ' ';
                     }
                     $param .= $xpath;
                 } else {
                     unset($config[$key]);
                 }
             } else {
-                $param .= $key . '=' . $item . ' ';
+                $param .= '--' . $key . '=' . $item . ' ';
             }
 
         }
         return $param;
     }
+
     private static function merge($a, $b)
     {
         $res = $a;

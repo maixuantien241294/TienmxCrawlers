@@ -9,6 +9,7 @@
 namespace Tienmx\Crawler\TraitCrawler;
 
 
+use Tienmx\Crawler\Casperjs\Casper;
 use Tienmx\Crawler\Nightmare\Nightmare;
 use Tienmx\Crawler\Phantomjs\Phantom;
 use Tienmx\Crawler\Puppeteer\Puppeteer;
@@ -112,6 +113,27 @@ trait CrawlerTypeTrait
             }
 
             $browser = new Nightmare();
+            $result = $browser->html($data);
+            if ($result['returnVal'] === 0) {
+                $content = $result['ouput'];
+                $content = implode('', $content);
+                $return['content'] = $content;
+                $return['errors'] = false;
+            }
+        } catch (\Exception $exception) {
+            $return['msg'] = $exception->getMessage();
+        }
+        return $return;
+    }
+
+    public function crawlerByCasper($data=array()){
+        $return = ['errors' => true, 'msg' => "", 'content' => ''];
+        try {
+            if (!isset($data['link'])) {
+                throw new \Exception('URL or HTML in configuration required', 400);
+            }
+
+            $browser = new Casper();
             $result = $browser->html($data);
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
