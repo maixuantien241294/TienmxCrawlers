@@ -30,6 +30,7 @@ class Casper
 
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
+        //dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
 
         $result = [

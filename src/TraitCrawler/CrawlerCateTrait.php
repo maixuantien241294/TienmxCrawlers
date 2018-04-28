@@ -53,7 +53,7 @@ class CrawlerCateTrait
                     if (!empty($element)) {
                         foreach ($element as $item) {
                             $attr = $item->attr;
-                            $href = isset($attr['href']) ? $attr['href'] : "";
+                            $href = isset($attr['href']) ? trim($attr['href']) : "";
                             if (!preg_match('/' . $this->domain . '/', $href, $match)
                                 && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                                 $href = $this->linkWebsite . $href;
@@ -85,7 +85,7 @@ class CrawlerCateTrait
 
                 if ($nodelist->length > 0) {
                     foreach ($nodelist as $item) {
-                        $href = $item->getAttribute('href');
+                        $href = trim($item->getAttribute('href'));
                         if (!preg_match('/' . $this->domain . '/', $href, $match)
                             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                             $href = $this->linkWebsite . $href;
@@ -94,9 +94,11 @@ class CrawlerCateTrait
                                 $href = "http:" . $href;
                             }
                         }
-                        $paramsRemove = explode('.', $paramsRemove);
-                        if ($paramsRemove) {
-                            $href = $this->formatLink($href, $paramsRemove);
+                        if (!empty($paramsRemove)) {
+                            $remove = explode(',', $paramsRemove);
+                            if (!empty($remove)) {
+                                $href = $this->formatLink($href, $remove);
+                            }
                         }
                         $dataParser = [
                             'href' => $href,
@@ -141,7 +143,7 @@ class CrawlerCateTrait
             $element = $dom->find($this->rules);
             if (count($element) > 0) {
                 foreach ($element as $item) {
-                    $href = $item->getAttribute('href');
+                    $href = trim($item->getAttribute('href'));
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                         $href = $this->linkWebsite . $href;
@@ -167,7 +169,7 @@ class CrawlerCateTrait
 
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $item) {
-                    $href = $item->getAttribute('href');
+                    $href = trim($item->getAttribute('href'));
 
                     if (!preg_match('/' . $this->domain . '/', $href, $match)
                         && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {

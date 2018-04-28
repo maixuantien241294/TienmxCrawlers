@@ -67,7 +67,7 @@ casper.then(function () {
                 });
         }
 
-        this.wait(2000, function () {
+        this.wait(4000, function () {
 
             var da = new Date();
             var endTime = da.getTime();
