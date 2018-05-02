@@ -57,7 +57,16 @@ class CrawlerCateTrait
                             if (!empty($href)) {
                                 if (!preg_match('/' . $this->domain . '/', $href, $match)
                                     && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                                    $href = $this->linkWebsite . $href;
+                                    /**
+                                     * @kiêm tra xem phần tử đầu có dấu '/'
+                                     */
+                                    $testElement = substr($href, '0', 1);
+                                    if ($testElement != '/') {
+                                        $href = $this->linkWebsite . '/' . $href;
+                                    }else{
+                                        $href = $this->linkWebsite  . $href;
+                                    }
+                                    //$href = $this->linkWebsite . $href;
                                 } else {
                                     if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                         $href = "http:" . $href;
@@ -91,7 +100,16 @@ class CrawlerCateTrait
                         if (!empty($href)) {
                             if (!preg_match('/' . $this->domain . '/', $href, $match)
                                 && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                                $href = $this->linkWebsite . $href;
+                                /**
+                                 * @kiêm tra xem phần tử đầu có dấu '/'
+                                 */
+                                $testElement = substr($href, '0', 1);
+                                if ($testElement != '/') {
+                                    $href = $this->linkWebsite . '/' . $href;
+                                }else{
+                                    $href = $this->linkWebsite  . $href;
+                                }
+//                                $href = $this->linkWebsite . $href;
                             } else {
                                 if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                     $href = "http:" . $href;
@@ -191,7 +209,16 @@ class CrawlerCateTrait
                     if (!empty($href)) {
                         if (!preg_match('/' . $this->domain . '/', $href, $match)
                             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                            $href = $this->linkWebsite . $href;
+                            /**
+                             * @kiêm tra xem phần tử đầu có dấu '/'
+                             */
+                            $testElement = substr($href, '0', 1);
+                            if ($testElement != '/') {
+                                $href = $this->linkWebsite . '/' . $href;
+                            }else{
+                                $href = $this->linkWebsite  . $href;
+                            }
+                            //$href = $this->linkWebsite . $href;
                         } else {
                             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                 $href = "http:" . $href;
