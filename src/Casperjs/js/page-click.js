@@ -25,12 +25,19 @@ try {
 
     while (count < item_target_count) {
         casper.then(function() {
-            this.waitForSelector(pag_dom_click, (function() {
-                this.thenClick(pag_dom_click).wait(2000);
-            }), (function() {
-                // this.die("Timeout reached. Fail whale?");
-                // this.exit();
-            }), 2000);
+            this.thenClick(pag_dom_click).wait(2000);
+            // this.waitForSelector(pag_dom_click, (function() {
+
+            // }), (function() {
+            //     // this.die("Timeout reached. Fail whale?");
+            //     // this.exit();
+            // }), 2000);
+            // this.waitForSelector(pag_dom_click, (function() {
+            //     this.thenClick(pag_dom_click).wait(2000);
+            // }), (function() {
+            //     // this.die("Timeout reached. Fail whale?");
+            //     // this.exit();
+            // }), 2000);
             // this.wait(2000);
         });
         // casper.thenClick(pag_dom_click).wait(2000);

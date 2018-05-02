@@ -213,6 +213,7 @@ class CrawlerCateTrait
         return $url;
     }
 
+    
     public function formatLink($url = '', $rm_query = [])
     {
         $result = $url;

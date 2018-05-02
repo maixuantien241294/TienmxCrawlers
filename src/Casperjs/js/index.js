@@ -8,9 +8,7 @@ var content = "";
  * get params
  */
 var link = casper.cli.get("link");
-var web_xpath_active = casper.cli.get("web_xpath_active");
-var web_xpath_active_detail = casper.cli.get("web_xpath_active_detail");
-var web_xpath_active_cate = casper.cli.get("web_xpath_active_cate");
+var dom_click = casper.cli.get("dom_click");
 /**
  * kết thúc get params
  */
@@ -28,7 +26,7 @@ casper.then(function () {
         /**
          * @desc : click trang chủ
          */
-        if (typeof web_xpath_active != 'undefined' && web_xpath_active.length != 0) {
+        if (typeof dom_click != 'undefined' && dom_click.length != 0) {
             casper.evaluate(function (btn_click) {
                 var element = document.querySelector(btn_click);
                 var event = document.createEvent('MouseEvents');
@@ -37,33 +35,7 @@ casper.then(function () {
                     element.dispatchEvent(event);
                 }
             }, {
-                    btn_click: web_xpath_active
-                });
-        }
-
-        if (typeof web_xpath_active_detail != 'undefined' && web_xpath_active_detail.length != 0) {
-            casper.evaluate(function (btn_click) {
-                var element = document.querySelector(btn_click);
-                var event = document.createEvent('MouseEvents');
-                event.initMouseEvent('click', true, true, window, 1, 0, 0);
-                if (element) {
-                    element.dispatchEvent(event);
-                }
-            }, {
-                    btn_click: web_xpath_active_detail
-                });
-        }
-
-        if (typeof web_xpath_active_cate != 'undefined' && web_xpath_active_cate.length != 0) {
-            casper.evaluate(function (btn_click) {
-                var element = document.querySelector(btn_click);
-                var event = document.createEvent('MouseEvents');
-                event.initMouseEvent('click', true, true, window, 1, 0, 0);
-                if (element) {
-                    element.dispatchEvent(event);
-                }
-            }, {
-                    btn_click: web_xpath_active_cate
+                    btn_click: dom_click
                 });
         }
 

@@ -1,25 +1,26 @@
 <?php
-namespace  Tienmx\Crawler\Casperjs;
-class Casper
+namespace  Tienmx\Crawler\Selenium;
+
+class Selenium
 {
     public $executable;
     public $config;
     public $nodeBinary;
-    public $pageClickConfigJs;
     public function __construct()
     {
         $this->config = [];
         // default config
-        $this->config['goto']['waitUntil'] = ['load', 'domcontentloaded', 'networkidle0', 'networkidle2'];
-        $this->config['viewport']['width'] = 1024;
-        $this->config['viewport']['height'] = 800;
+//        $this->config['goto']['waitUntil'] = ['load', 'domcontentloaded', 'networkidle0', 'networkidle2'];
+//        $this->config['viewport']['width'] = 1024;
+//        $this->config['viewport']['height'] = 800;
 
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
-        $this->nodeBinary = 'casperjs';
+        $this->nodeBinary = 'node';
+//        $this->executable = 'D:\selenium_demo2\index.js';
         $this->executable = __DIR__ . '/js/index.js';
-        $this->pageClickConfigJs = __DIR__ . '/js/page-click.js';
     }
+
     public function html($config = [])
     {
         if (!isset($config['link'])) {
@@ -30,9 +31,9 @@ class Casper
 
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
-        //dd($fullCommand);
+        //echo date('d-m-y H:i:s');
         exec($fullCommand, $output, $returnVal);
-
+//        dd($output);
         $result = [
             'ouput' => $output,
             'returnVal' => $returnVal
@@ -40,26 +41,6 @@ class Casper
         return $result;
     }
 
-//    public function pageClick($config = [])
-//    {
-//        if (!isset($config['link'])) {
-//            throw new \Exception('URL or HTML in configuration required', 400);
-//        }
-//
-//        $this->config = $this->merge($this->config, $config);
-//        $param = $this->getParams($config);
-//        $fullCommand = $this->nodeBinary . ' '
-//            . escapeshellarg($this->pageClickConfigJs) . ' ' . $param;
-//        dd($fullCommand);
-//        exec($fullCommand, $output, $returnVal);
-////       dd($output);
-//        $result = [
-//            'ouput' => $output,
-//            'returnVal' => $returnVal
-//        ];
-//        return $result;
-//    }
-    
     public function getParams($config = [])
     {
         $param = "";
@@ -70,14 +51,14 @@ class Casper
                         $xpath = "";
                         $explode = explode(',', $config[$key]);
                         for ($i = 0; $i < count($explode); $i++) {
-                            $xpath .= '--' . $key . '="' . $explode[$i] . '" ';
+                            $xpath .= $key . '="' . $explode[$i] . '" ';
                         }
                         $param .= $xpath;
                     } else {
                         unset($config[$key]);
                     }
                 } else {
-                    $param .= '--' . $key . '="' . $item . '" ';
+                    $param .= $key . '="' . $item . '" ';
                 }
             }
 

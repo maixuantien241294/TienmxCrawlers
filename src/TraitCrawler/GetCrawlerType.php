@@ -24,6 +24,7 @@ class GetCrawlerType
     public $crawlerPuppeteer = 3;
     public $crawlerNightmare = 5;
     public $crawlerCasper = 6;
+    public $crawlerSelenium = 7;
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
@@ -145,6 +146,14 @@ class GetCrawlerType
                     break;
                 case $this->crawlerCasper:
                     $respone = $this->crawlerByCasper($data);
+                    if ($respone['errors'] == true) {
+                        $return['message'] = 'Không lấy được dữ liệu';
+                        return $return;
+                    }
+                    $content = $respone['content'];
+                    break;
+                case $this->crawlerSelenium:
+                    $respone = $this->crawlerBySelenium($data);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;
