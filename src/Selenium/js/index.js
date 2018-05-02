@@ -29,6 +29,7 @@ var a = (async function example() {
         .build();
     try {
         await driver.get('' + link + '');
+        await driver.sleep(2000);
         /**
          * @desc : click trang chủ
          */
