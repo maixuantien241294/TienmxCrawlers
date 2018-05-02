@@ -1,11 +1,14 @@
 <?php
-namespace  Tienmx\Crawler\Selenium;
+
+namespace Tienmx\Crawler\Selenium;
 
 class Selenium
 {
     public $executable;
     public $config;
     public $nodeBinary;
+    public $configDefine = 'MqFPJ3HnAV';
+
     public function __construct()
     {
         $this->config = [];
@@ -32,6 +35,8 @@ class Selenium
         $fullCommand = $this->nodeBinary . ' '
             . escapeshellarg($this->executable) . ' ' . $param;
         //echo date('d-m-y H:i:s');
+//        dd($fullCommand);
+
         exec($fullCommand, $output, $returnVal);
 //        dd($output);
         $result = [
@@ -45,20 +50,20 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if(in_array($key, ['dom_click','link'])){
+            if (in_array($key, ['dom_click', 'link'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";
                         $explode = explode(',', $config[$key]);
                         for ($i = 0; $i < count($explode); $i++) {
-                            $xpath .= $key . '="' . $explode[$i] . '" ';
+                            $xpath .= $key . $this->configDefine . '"' . $explode[$i] . '" ';
                         }
                         $param .= $xpath;
                     } else {
                         unset($config[$key]);
                     }
                 } else {
-                    $param .= $key . '="' . $item . '" ';
+                    $param .= $key .  $this->configDefine .'"' . $item . '" ';
                 }
             }
 

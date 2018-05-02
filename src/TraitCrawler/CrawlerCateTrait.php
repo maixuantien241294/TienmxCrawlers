@@ -54,6 +54,41 @@ class CrawlerCateTrait
                         foreach ($element as $item) {
                             $attr = $item->attr;
                             $href = isset($attr['href']) ? trim($attr['href']) : "";
+                            if(!empty($href)){
+                                if (!preg_match('/' . $this->domain . '/', $href, $match)
+                                    && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                                    $href = $this->linkWebsite . $href;
+                                } else {
+                                    if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                                        $href = "http:" . $href;
+                                    }
+                                }
+                                if (!empty($paramsRemove)) {
+                                    $remove = explode(',', $paramsRemove);
+                                    if (!empty($remove)) {
+                                        $href = $this->formatLink($href, $remove);
+                                    }
+                                }
+                                $data = [
+                                    'href' => $href,
+                                    'text' => $item->text(),
+                                ];
+                                array_push($temp, $data);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $html = new \DOMDocument();
+                @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+                $crawler = new \DOMXPath($html);
+
+                $nodelist = $crawler->query($this->rules);
+
+                if ($nodelist->length > 0) {
+                    foreach ($nodelist as $item) {
+                        $href = trim($item->getAttribute('href'));
+                        if(!empty($href)){
                             if (!preg_match('/' . $this->domain . '/', $href, $match)
                                 && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
                                 $href = $this->linkWebsite . $href;
@@ -68,43 +103,12 @@ class CrawlerCateTrait
                                     $href = $this->formatLink($href, $remove);
                                 }
                             }
-                            $data = [
+                            $dataParser = [
                                 'href' => $href,
-                                'text' => $item->text(),
+                                'text' => trim($item->nodeValue),
                             ];
-                            array_push($temp, $data);
+                            array_push($temp, $dataParser);
                         }
-                    }
-                }
-            } else {
-                $html = new \DOMDocument();
-                @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-                $crawler = new \DOMXPath($html);
-
-                $nodelist = $crawler->query($this->rules);
-
-                if ($nodelist->length > 0) {
-                    foreach ($nodelist as $item) {
-                        $href = trim($item->getAttribute('href'));
-                        if (!preg_match('/' . $this->domain . '/', $href, $match)
-                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                            $href = $this->linkWebsite . $href;
-                        } else {
-                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                                $href = "http:" . $href;
-                            }
-                        }
-                        if (!empty($paramsRemove)) {
-                            $remove = explode(',', $paramsRemove);
-                            if (!empty($remove)) {
-                                $href = $this->formatLink($href, $remove);
-                            }
-                        }
-                        $dataParser = [
-                            'href' => $href,
-                            'text' => trim($item->nodeValue),
-                        ];
-                        array_push($temp, $dataParser);
                     }
                 }
             }
@@ -144,19 +148,22 @@ class CrawlerCateTrait
             if (count($element) > 0) {
                 foreach ($element as $item) {
                     $href = trim($item->getAttribute('href'));
-                    if (!preg_match('/' . $this->domain . '/', $href, $match)
-                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                        $href = $this->linkWebsite . $href;
-                    } else {
-                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                            $href = "http:" . $href;
+                    if(!empty($href)){
+                        if (!preg_match('/' . $this->domain . '/', $href, $match)
+                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                            $href = $this->linkWebsite . $href;
+                        } else {
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                                $href = "http:" . $href;
+                            }
                         }
+                        $dataParser = [
+                            'href' => $href,
+                            'text' => $item->text(),
+                        ];
+                        array_push($temp, $dataParser);
                     }
-                    $dataParser = [
-                        'href' => $href,
-                        'text' => $item->text(),
-                    ];
-                    array_push($temp, $dataParser);
+
                 }
             }
         } else {
@@ -171,21 +178,23 @@ class CrawlerCateTrait
                 foreach ($nodelist as $item) {
                     $href = trim($item->getAttribute('href'));
 
-                    if (!preg_match('/' . $this->domain . '/', $href, $match)
-                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                        $href = $this->linkWebsite . $href;
-                    } else {
-                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                            $href = "http:" . $href;
+                    if(!empty($href)){
+                        if (!preg_match('/' . $this->domain . '/', $href, $match)
+                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                            $href = $this->linkWebsite . $href;
+                        } else {
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                                $href = "http:" . $href;
+                            }
                         }
-                    }
-                    $title = trim($item->getAttribute('title'));
+                        $title = trim($item->getAttribute('title'));
 
-                    $dataParser = [
-                        'href' => $href,
-                        'text' => empty($title) ? trim($item->nodeValue) : $title,
-                    ];
-                    array_push($temp, $dataParser);
+                        $dataParser = [
+                            'href' => $href,
+                            'text' => empty($title) ? trim($item->nodeValue) : $title,
+                        ];
+                        array_push($temp, $dataParser);
+                    }
                 }
             }
         }
