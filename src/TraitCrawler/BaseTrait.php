@@ -115,6 +115,7 @@ trait BaseTrait
     public function addJsContent($data = array(), $content)
     {
         $link = isset($data['link_website']) ? $data['link_website'] : $data['link'];
+        $oldLink = isset($data['link_website']) ? $data['link_website'] : $data['link'];
         $link = $this->getUrl($link);
         $explodeLink = explode('/', $link);
         if (count($explodeLink) === 4) {
@@ -124,6 +125,7 @@ trait BaseTrait
          * @desc replace link css
          */
         $header = '<base href="' . $link . '" target="_blank">';
+        $header .= '<base href="' . $link . '/' . '" target="_blank">';
 //        $content = str_replace('<head[^>]*id=\"(.*?)\">', '<head>' . $header, $content);
         $content = str_replace('<head>', '<head>' . $header, $content);
         $dataHeader = '<link rel="stylesheet" type="text/css" href="' . env('APP_DOMAIN', '') . 'getruler/inject.css?=v' . VERSION . '">';
