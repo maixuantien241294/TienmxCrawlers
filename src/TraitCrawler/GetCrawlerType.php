@@ -44,9 +44,9 @@ class GetCrawlerType
             $temp = [];
             foreach ($rules as $k => $val) {
                 $htmlString = "";
-                $valueRemove = $val['value_remove'];
-                $valueRemoveXpath = $val['value_remove_xpath'];
-                $valueRemoveBlock = $val['value_remove_block'];
+                $valueRemove = isset($val['value_remove']) ? $val['value_remove'] : "";
+                $valueRemoveXpath = isset($val['value_remove_xpath'])?$val['value_remove_xpath']:"";
+                $valueRemoveBlock = isset($val['value_remove_block'])?$val['value_remove_block']:"";
                 switch ($val['type']) {
                     case $this->text:
                         $query = $val['value'];
