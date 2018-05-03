@@ -68,6 +68,18 @@ class CrawlerCateTrait
                                     }
                                     //$href = $this->linkWebsite . $href;
                                 } else {
+                                    /**
+                                     * @kiểm tra xem có domain không
+                                     */
+                                    $parse = parse_url($href);
+                                    if (!isset($parse['host'])) {
+                                        $testElement = substr($href, '0', 1);
+                                        if ($testElement != '/') {
+                                            $href = $this->linkWebsite . '/' . $href;
+                                        } else {
+                                            $href = $this->linkWebsite . $href;
+                                        }
+                                    }
                                     if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                         $href = "http:" . $href;
                                     }
@@ -111,6 +123,18 @@ class CrawlerCateTrait
                                 }
 //                                $href = $this->linkWebsite . $href;
                             } else {
+                                /**
+                                 * @kiểm tra xem có domain không
+                                 */
+                                $parse = parse_url($href);
+                                if (!isset($parse['host'])) {
+                                    $testElement = substr($href, '0', 1);
+                                    if ($testElement != '/') {
+                                        $href = $this->linkWebsite . '/' . $href;
+                                    } else {
+                                        $href = $this->linkWebsite . $href;
+                                    }
+                                }
                                 if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                     $href = "http:" . $href;
                                 }
@@ -180,7 +204,18 @@ class CrawlerCateTrait
                             }
 
                         } else {
-
+                            /**
+                             * @kiểm tra xem có domain không
+                             */
+                            $parse = parse_url($href);
+                            if (!isset($parse['host'])) {
+                                $testElement = substr($href, '0', 1);
+                                if ($testElement != '/') {
+                                    $href = $this->linkWebsite . '/' . $href;
+                                } else {
+                                    $href = $this->linkWebsite . $href;
+                                }
+                            }
                             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                 $href = "http:" . $href;
                             }
@@ -220,6 +255,18 @@ class CrawlerCateTrait
                             }
                             //$href = $this->linkWebsite . $href;
                         } else {
+                            /**
+                             * @kiểm tra xem có domain không
+                             */
+                            $parse = parse_url($href);
+                            if (!isset($parse['host'])) {
+                                $testElement = substr($href, '0', 1);
+                                if ($testElement != '/') {
+                                    $href = $this->linkWebsite . '/' . $href;
+                                } else {
+                                    $href = $this->linkWebsite . $href;
+                                }
+                            }
                             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                                 $href = "http:" . $href;
                             }
