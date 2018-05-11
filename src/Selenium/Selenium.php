@@ -21,7 +21,7 @@ class Selenium
         $this->nodePath = 'NODE_PATH=`npm root -g`';
         $this->nodeBinary = 'node';
 //        $this->executable = 'D:\selenium_demo2\index.js';
-        $this->executable = __DIR__ . '/js/index.js';
+        $this->executable = __DIR__ . '/js/request.js';
     }
 
     public function html($config = [])
