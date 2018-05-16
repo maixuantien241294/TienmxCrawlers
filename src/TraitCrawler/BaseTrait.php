@@ -42,7 +42,7 @@ trait BaseTrait
     public function removeValue($search, $replace, $string)
     {
 
-        $search = explode(',', $search);
+        $search = explode('|', $search);
         $result = $string;
         if (is_array($search) || is_object($search) || !empty($search)) {
             foreach ($search as $value_search) {
