@@ -17,16 +17,22 @@ class CrawlerText
     public function executeText($contentHtml, $rule, $valueRemove)
     {
         $htmlString = "";
-        $check = $this->checkXpath($rule);
-        if ($check === false) {
+        $ruleHtml = $this->getRuleHtml($rule);
+        if (!empty($ruleHtml)) {
+            for ($i = 0; $i < count($ruleHtml); $i++) {
+                $check = $this->checkXpath($ruleHtml[$i]);
+                if ($check === false) {
 
-            $htmlString = $this->parseDom($contentHtml, $rule, $valueRemove);
-        } else {
-            $htmlString = $this->parseDom($contentHtml, $rule, $valueRemove);
-        }
-        
-        if(!empty($valueRemove)){
-            $htmlString = $this->removeValue($valueRemove, '', $htmlString);
+                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                } else {
+                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                }
+
+                if (!empty($valueRemove)) {
+                    $newString = $this->removeValue($valueRemove, '', $newString);
+                }
+                $htmlString = $htmlString . $newString;
+            }
         }
         return $htmlString;
     }

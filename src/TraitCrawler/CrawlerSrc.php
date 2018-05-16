@@ -29,14 +29,23 @@ class CrawlerSrc
     {
 
         $htmlString = [];
-        $check = $this->checkXpath($rule);
+        $ruleHtml = $this->getRuleHtml($rule);
+        if (!empty($ruleHtml)) {
+            for ($i = 0; $i < count($ruleHtml); $i++) {
+                $check = $this->checkXpath($ruleHtml[$i]);
+                if ($check === false) {
+                    $listImage = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                } else {
+                    $listImage = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                }
+                if (!empty($listImage)) {
+                    foreach ($listImage as $item) {
+                        array_push($htmlString, $item);
+                    }
+                }
 
-        if ($check === false) {
-            $htmlString = $this->parseDom($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
-        } else {
-            $htmlString = $this->parseXpath($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+            }
         }
-
         return $htmlString;
 
     }
@@ -108,7 +117,7 @@ class CrawlerSrc
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
-                    if($item == 'style'){
+                    if ($item == 'style') {
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
                         preg_match($regex, $image, $matches);
                         if (isset($matches) && count($matches) > 0) {

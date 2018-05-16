@@ -38,7 +38,7 @@ class Selenium
 //        dd($fullCommand);
 
         exec($fullCommand, $output, $returnVal);
-//        dd($output);
+        //dd($output);
         $result = [
             'ouput' => $output,
             'returnVal' => $returnVal

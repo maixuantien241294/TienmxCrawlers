@@ -41,17 +41,20 @@ function getDataPage(data) {
             console.info("Crawler link: "+data.link[0]);
             await driver.get('' + data.link[0] + '');
             if (typeof data.dom_click != 'undefined' && data.dom_click.length != 0) {
-                await driver.sleep(1000);
-                var existed = await
-                driver.findElement(By.css(data.dom_click[0])).then(function () {
-                    return true; //it existed
-                }, function (err) {
-                    return false;
-                });
-                console.log(existed);
-                if (existed) {
-                    await driver.findElement(By.css(data.dom_click[0])).click();
+                for (var i=0;i<data.dom_click.length;i++){
+                    await driver.sleep(1000);
+                    var existed = await
+                        driver.findElement(By.css(data.dom_click[i])).then(function () {
+                            return true; //it existed
+                        }, function (err) {
+                            return false;
+                        });
+                    console.log(existed);
+                    if (existed) {
+                        await driver.findElement(By.css(data.dom_click[i])).click();
+                    }
                 }
+
             }
             await driver.sleep(1000);
             await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {

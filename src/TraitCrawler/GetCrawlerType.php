@@ -36,7 +36,7 @@ class GetCrawlerType
     }
 
 
-    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download)
+    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $showArray = 0)
     {
         $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
@@ -45,8 +45,8 @@ class GetCrawlerType
             foreach ($rules as $k => $val) {
                 $htmlString = "";
                 $valueRemove = isset($val['value_remove']) ? $val['value_remove'] : "";
-                $valueRemoveXpath = isset($val['value_remove_xpath'])?$val['value_remove_xpath']:"";
-                $valueRemoveBlock = isset($val['value_remove_block'])?$val['value_remove_block']:"";
+                $valueRemoveXpath = isset($val['value_remove_xpath']) ? $val['value_remove_xpath'] : "";
+                $valueRemoveBlock = isset($val['value_remove_block']) ? $val['value_remove_block'] : "";
                 switch ($val['type']) {
                     case $this->text:
                         $query = $val['value'];
@@ -80,7 +80,7 @@ class GetCrawlerType
                 }
                 $rules[$k]['content'] = $htmlString;
                 if ($download == $this->isDownload) {
-                    if (in_array($rules[$k]['type'], [$this->src, $this->price])) {
+                    if ($showArray == 0 && in_array($rules[$k]['type'], [$this->src, $this->price])) {
                         $temp[$rules[$k]['key']] = json_encode($htmlString);
                     } else {
                         $temp[$rules[$k]['key']] = $htmlString;

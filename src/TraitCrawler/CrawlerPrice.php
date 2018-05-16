@@ -18,27 +18,37 @@ class CrawlerPrice
     {
         $htmlString = "";
         //lấy tất cả là số trong chuỗi tring;
-        $check = $this->checkXpath($rule);
-        if ($check === false) {
-            $htmlString = $this->parseDom($contentHtml, $rule, $valueRemove);
-        } else {
-            $htmlString = $this->parseXpath($contentHtml, $rule, $valueRemove);
+        $ruleHtml = $this->getRuleHtml($rule);
+        if (!empty($ruleHtml)) {
+            for ($i = 0; $i < count($ruleHtml); $i++) {
+                $check = $this->checkXpath($ruleHtml[$i]);
+                if ($check === false) {
+                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                } else {
+                    $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $valueRemove);
+                }
+                $htmlString = $htmlString . '-' . $newString;
+            }
         }
         $price = [];
         /**
          * @desc => Kiểm tra nếu có dấu gạch ngang `-`
          */
         $expPrice = explode('-', $htmlString);
+//        dd($expPrice);
         if (count($expPrice) >= 1) {
             foreach ($expPrice as $item) {
                 $priceItem = "";
-                if (preg_match_all('/\d+/', $item, $matches)) {
-                    $matches = $matches[0];
-                    foreach ($matches as $value) {
-                        $priceItem .= $value;
+                if(!empty(trim($item))){
+                    if (preg_match_all('/\d+/', trim($item), $matches)) {
+                        $matches = $matches[0];
+                        foreach ($matches as $value) {
+                            $priceItem .= $value;
+                        }
                     }
+                    array_push($price, $priceItem);
                 }
-                array_push($price, $priceItem);
+
             }
         }
         return $price;
