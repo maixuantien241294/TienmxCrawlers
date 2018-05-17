@@ -8,6 +8,7 @@ class Selenium
     public $config;
     public $nodeBinary;
     public $configDefine = 'MqFPJ3HnAV';
+    public $executableServer;
 
     public function __construct()
     {
@@ -22,27 +23,50 @@ class Selenium
         $this->nodeBinary = 'node';
 //        $this->executable = 'D:\selenium_demo2\index.js';
         $this->executable = __DIR__ . '/js/request.js';
+        $this->executableServer = __DIR__ . '/js/server_request.js';
+        ini_set('max_execution_time', 300);
+        set_time_limit(300);
     }
 
-    public function html($config = [])
+    /**
+     * @nếu là 1 thì chay lưu file và đọc ra nếu là 2 thì đẩy ra file luôn
+     * @param array $config
+     * @param int $server
+     * @return array
+     * @throws \Exception
+     */
+    public function html($config = [], $server = 1)
     {
         if (!isset($config['link'])) {
             throw new \Exception('URL or HTML in configuration required', 400);
         }
         $param = $this->getParams($config);
         $this->config = $this->merge($this->config, $config);
-
-        $fullCommand = $this->nodeBinary . ' '
-            . escapeshellarg($this->executable) . ' ' . $param;
-        //echo date('d-m-y H:i:s');
-//        dd($fullCommand);
+        if ($server == 1) {
+            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE');
+            $fullCommand = $this->nodeBinary . ' '
+                . escapeshellarg($this->executableServer) . ' ' . $param;
+        } else {
+            $fullCommand = $this->nodeBinary . ' '
+                . escapeshellarg($this->executable) . ' ' . $param;
+        }
 
         exec($fullCommand, $output, $returnVal);
-        //dd($output);
+        $content = "";
+        if ($returnVal == 0) {
+            if (\Storage::exists('download_file.php')) {
+                $content = \Storage::get('download_file.php');
+                /**
+                 * remove file
+                 */
+                \Storage::delete('download_file.php');
+            }
+        }
         $result = [
-            'ouput' => $output,
+            'ouput' => $content,
             'returnVal' => $returnVal
         ];
+        dd($result);
         return $result;
     }
 
@@ -63,7 +87,7 @@ class Selenium
                         unset($config[$key]);
                     }
                 } else {
-                    $param .= $key .  $this->configDefine .'"' . $item . '" ';
+                    $param .= $key . $this->configDefine . '"' . $item . '" ';
                 }
             }
 

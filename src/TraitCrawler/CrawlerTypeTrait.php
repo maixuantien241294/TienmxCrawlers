@@ -106,7 +106,8 @@ trait CrawlerTypeTrait
         return $return;
     }
 
-    public function crawlerByNightmare($data = array()){
+    public function crawlerByNightmare($data = array())
+    {
         $return = ['errors' => true, 'msg' => "", 'content' => ''];
         try {
             if (!isset($data['link'])) {
@@ -127,7 +128,8 @@ trait CrawlerTypeTrait
         return $return;
     }
 
-    public function crawlerByCasper($data=array()){
+    public function crawlerByCasper($data = array())
+    {
         $return = ['errors' => true, 'msg' => "", 'content' => ''];
         try {
             if (!isset($data['link'])) {
@@ -149,7 +151,8 @@ trait CrawlerTypeTrait
     }
 
 
-    public function crawlerBySelenium($data=array()){
+    public function crawlerBySelenium($data = array(), $server = 1)
+    {
         $return = ['errors' => true, 'msg' => "", 'content' => ''];
         try {
             if (!isset($data['link'])) {
@@ -157,10 +160,15 @@ trait CrawlerTypeTrait
             }
 
             $browser = new Selenium();
-            $result = $browser->html($data);
+            $result = $browser->html($data, $server);
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
-                $content = implode('', $content);
+                if ($server == 1) {
+                    $return['content'] = $content;
+                } else {
+                    $content = implode('', $content);
+                    $return['content'] = $content;
+                }
                 $return['content'] = $content;
                 $return['errors'] = false;
             }
