@@ -66,7 +66,6 @@ class Selenium
             'ouput' => $content,
             'returnVal' => $returnVal
         ];
-        dd($result);
         return $result;
     }
 
