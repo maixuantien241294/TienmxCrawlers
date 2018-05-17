@@ -50,22 +50,31 @@ class Selenium
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executable) . ' ' . $param;
         }
-
         exec($fullCommand, $output, $returnVal);
         $content = "";
-        if ($returnVal == 0) {
-            if (\Storage::exists('download_file.php')) {
-                $content = \Storage::get('download_file.php');
-                /**
-                 * remove file
-                 */
-                \Storage::delete('download_file.php');
+        if($server == 1){
+            if ($returnVal == 0) {
+                if (\Storage::exists('download_file.php')) {
+                    $content = \Storage::get('download_file.php');
+                    /**
+                     * remove file
+                     */
+                    \Storage::delete('download_file.php');
+                }
             }
+            $result = [
+                'ouput' => $content,
+                'returnVal' => $returnVal
+            ];
+        }else{
+            $result = [
+                'ouput' => $output,
+                'returnVal' => $returnVal
+            ];
         }
-        $result = [
-            'ouput' => $content,
-            'returnVal' => $returnVal
-        ];
+
+        
+
         return $result;
     }
 

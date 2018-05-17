@@ -108,6 +108,7 @@ class GetCrawlerType
     public function crawlerHtml($data = array(), $server = 1)
     {
 
+
         $type = isset($data['type']) ? $data['type'] : $this->crawlerUrl;
 
         $return = ['success' => 0, 'message' => __('app.error_ajax'), 'content' => '', 'error' => true];
@@ -153,7 +154,7 @@ class GetCrawlerType
                     $content = $respone['content'];
                     break;
                 case $this->crawlerSelenium:
-                    $respone = $this->crawlerBySelenium($data, $server = 1);
+                    $respone = $this->crawlerBySelenium($data, $server);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;
