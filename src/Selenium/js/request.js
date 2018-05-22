@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:3100', { reconnect: true });
+var socket = io.connect('http://localhost:31000', { reconnect: true });
 var newArray = {
     link: [],
     dom_click: []
@@ -25,12 +25,12 @@ socket.on('connect', function() {
     .on('connect_error', function() {
         // console.log('Conn error');
         const execFile = require('child_process').execFile;
-        // const child = execFile('server.bat', [], (error, stdout, stderr) => {
-        //     // if (error) {
-        //     //     throw error;
-        //     // }
-        //     // console.log(stdout);
-        // });
+        const child = execFile('server.bat', [], (error, stdout, stderr) => {
+            if (error) {
+                throw error;
+            }
+            console.log(stdout);
+        });
     })
     .on('disconnect', function() {
         // console.log('Disconnected');

@@ -9,6 +9,7 @@ class Selenium
     public $nodeBinary;
     public $configDefine = 'MqFPJ3HnAV';
     public $executableServer;
+    public $executableRequest;
 
     public function __construct()
     {
@@ -21,9 +22,9 @@ class Selenium
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
         $this->nodeBinary = 'node';
-//        $this->executable = 'D:\selenium_demo2\index.js';
-        $this->executable = __DIR__ . '/js/request.js';
-        $this->executableServer = __DIR__ . '/js/server_request.js';
+        $this->executableRequest = __DIR__ . '/js/request.js';
+        $this->executable = __DIR__ . '/js/index.js';
+        $this->executableServer = __DIR__ . '/js/server_index.js';
         ini_set('max_execution_time', 300);
         set_time_limit(300);
     }
@@ -48,33 +49,23 @@ class Selenium
                 . escapeshellarg($this->executableServer) . ' ' . $param;
         } else {
             $fullCommand = $this->nodeBinary . ' '
-                . escapeshellarg($this->executable) . ' ' . $param;
+                . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
         exec($fullCommand, $output, $returnVal);
         $content = "";
-        if($server == 1){
-            if ($returnVal == 0) {
-                if (\Storage::exists('download_file.php')) {
-                    $content = \Storage::get('download_file.php');
-                    /**
-                     * remove file
-                     */
-                    \Storage::delete('download_file.php');
-                }
+        if ($returnVal == 0) {
+            if (\Storage::exists('download_file.php')) {
+                $content = \Storage::get('download_file.php');
+                /**
+                 * remove file
+                 */
+                \Storage::delete('download_file.php');
             }
-            $result = [
-                'ouput' => $content,
-                'returnVal' => $returnVal
-            ];
-        }else{
-            $result = [
-                'ouput' => $output,
-                'returnVal' => $returnVal
-            ];
         }
-
-        
-
+        $result = [
+            'ouput' => $content,
+            'returnVal' => $returnVal
+        ];
         return $result;
     }
 

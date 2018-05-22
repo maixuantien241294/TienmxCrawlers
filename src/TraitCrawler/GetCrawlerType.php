@@ -51,31 +51,60 @@ class GetCrawlerType
                     case $this->text:
                         $query = $val['value'];
                         $cText = new CrawlerText();
-                        $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
+                        if (!empty($query)) {
+                            $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
+                        } else {
+                            $htmlString = "";
+                        }
+
                         break;
                     case $this->plaintext:
                         $query = $val['value'];
                         $cText = new CrawlerText();
-                        $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
+                        if (!empty($query)) {
+                            $htmlString = $cText->executeText($contentHtml, $query, $valueRemove);
+                        } else {
+                            $htmlString = "";
+                        }
                         break;
                     case $this->price:
                         $query = $val['value'];
                         $cPrice = new CrawlerPrice();
-                        $htmlString = $cPrice->executePrice($contentHtml, $query, $valueRemove);
+                        if (!empty($query)) {
+                            $htmlString = $cPrice->executePrice($contentHtml, $query, $valueRemove);
+                        } else {
+                            $htmlString = "";
+                        }
+
                         break;
                     case $this->html:
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
-                        $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        if (!empty($query)) {
+                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        } else {
+                            $htmlString = "";
+                        }
+
                         break;
                     case $this->src:
                         $cSrc = new CrawlerSrc();
-                        $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                        if (!empty($val['value'])) {
+                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                        } else {
+                            $htmlString = "";
+                        }
+
                         break;
                     case $this->content:
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
-                        $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        if (!empty($query)) {
+                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                        } else {
+                            $htmlString = "";
+                        }
+
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;
@@ -107,7 +136,6 @@ class GetCrawlerType
 
     public function crawlerHtml($data = array(), $server = 1)
     {
-
 
         $type = isset($data['type']) ? $data['type'] : $this->crawlerUrl;
 
@@ -154,7 +182,7 @@ class GetCrawlerType
                     $content = $respone['content'];
                     break;
                 case $this->crawlerSelenium:
-                    $respone = $this->crawlerBySelenium($data, $server);
+                    $respone = $this->crawlerBySelenium($data, $server = 1);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;

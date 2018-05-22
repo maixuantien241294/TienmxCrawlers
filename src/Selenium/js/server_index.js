@@ -2,7 +2,8 @@ const { Builder, By, Key, until } = require('selenium-webdriver');
 var fs = require('fs');
 var newArray = {
     link: [],
-    dom_click: []
+    dom_click: [],
+    path_folder: []
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
@@ -19,14 +20,10 @@ var da = new Date();
 var startTime = da.getTime();
 var content = '';
 var link = newArray.link
-
 var a = (async function example() {
     let driver = await new Builder().forBrowser('firefox')
-    // .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
+        .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
         .build();
-    // let driver = await new Builder().forBrowser('chrome')
-    //     .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
-    //     .build();
     try {
         await driver.get('' + link + '');
         /**
@@ -49,14 +46,15 @@ var a = (async function example() {
         }
         await driver.sleep(1000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
-            // content = profile;
-            console.log(profile);
+            var path = newArray['path_folder'][0];
+            fs.writeFileSync(path + 'download_file.php', profile);
         },function (err) {
             console.log('Not get content');
             process.exit(0);
         });
 
     }catch(err) {
+        await driver.quit();
         process.exit(1);
     }
     finally {
