@@ -29,22 +29,26 @@ class CrawlerSrc
     {
 
         $htmlString = [];
-        $ruleHtml = $this->getRuleHtml($rule);
-        if (!empty($ruleHtml)) {
-            for ($i = 0; $i < count($ruleHtml); $i++) {
-                $check = $this->checkXpath($ruleHtml[$i]);
-                if ($check === false) {
-                    $listImage = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
-                } else {
-                    $listImage = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
-                }
-                if (!empty($listImage)) {
-                    foreach ($listImage as $item) {
-                        array_push($htmlString, $item);
+        try {
+            $ruleHtml = $this->getRuleHtml($rule);
+            if (!empty($ruleHtml)) {
+                for ($i = 0; $i < count($ruleHtml); $i++) {
+                    $check = $this->checkXpath($ruleHtml[$i]);
+                    if ($check === false) {
+                        $listImage = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                    } else {
+                        $listImage = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
                     }
-                }
+                    if (!empty($listImage)) {
+                        foreach ($listImage as $item) {
+                            array_push($htmlString, $item);
+                        }
+                    }
 
+                }
             }
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
         }
         return $htmlString;
 
@@ -70,7 +74,7 @@ class CrawlerSrc
                         $style = $item->getAttribute('style');
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
                         $regex2 = '/background[-image]*:.*[\s]*url\(["|\']+(.*)["|\']+\)/';
-                        preg_match($regex, $image, $matches);
+                        preg_match($regex, $style, $matches);
 
 
                         if (isset($matches) && count($matches) > 0) {

@@ -18,38 +18,42 @@ class CrawlerPrice
     {
         $htmlString = "";
         //lấy tất cả là số trong chuỗi tring;
-        $ruleHtml = $this->getRuleHtml($rule);
-        if (!empty($ruleHtml)) {
-            for ($i = 0; $i < count($ruleHtml); $i++) {
-                $check = $this->checkXpath($ruleHtml[$i]);
-                if ($check === false) {
-                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
-                } else {
-                    $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $valueRemove);
-                }
-                $htmlString = $htmlString . '-' . $newString;
-            }
-        }
-        $price = [];
-        /**
-         * @desc => Kiểm tra nếu có dấu gạch ngang `-`
-         */
-        $expPrice = explode('-', $htmlString);
-//        dd($expPrice);
-        if (count($expPrice) >= 1) {
-            foreach ($expPrice as $item) {
-                $priceItem = "";
-                if(!empty(trim($item))){
-                    if (preg_match_all('/\d+/', trim($item), $matches)) {
-                        $matches = $matches[0];
-                        foreach ($matches as $value) {
-                            $priceItem .= $value;
-                        }
+        try {
+            $ruleHtml = $this->getRuleHtml($rule);
+            if (!empty($ruleHtml)) {
+                for ($i = 0; $i < count($ruleHtml); $i++) {
+                    $check = $this->checkXpath($ruleHtml[$i]);
+                    if ($check === false) {
+                        $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                    } else {
+                        $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $valueRemove);
                     }
-                    array_push($price, $priceItem);
+                    $htmlString = $htmlString . '-' . $newString;
                 }
-
             }
+            $price = [];
+            /**
+             * @desc => Kiểm tra nếu có dấu gạch ngang `-`
+             */
+            $expPrice = explode('-', $htmlString);
+//        dd($expPrice);
+            if (count($expPrice) >= 1) {
+                foreach ($expPrice as $item) {
+                    $priceItem = "";
+                    if (!empty(trim($item))) {
+                        if (preg_match_all('/\d+/', trim($item), $matches)) {
+                            $matches = $matches[0];
+                            foreach ($matches as $value) {
+                                $priceItem .= $value;
+                            }
+                        }
+                        array_push($price, $priceItem);
+                    }
+
+                }
+            }
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
         }
         return $price;
     }

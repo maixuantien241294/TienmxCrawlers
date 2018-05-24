@@ -17,23 +17,28 @@ class CrawlerText
     public function executeText($contentHtml, $rule, $valueRemove)
     {
         $htmlString = "";
-        $ruleHtml = $this->getRuleHtml($rule);
-        if (!empty($ruleHtml)) {
-            for ($i = 0; $i < count($ruleHtml); $i++) {
-                $check = $this->checkXpath($ruleHtml[$i]);
-                if ($check === false) {
+        try {
+            $ruleHtml = $this->getRuleHtml($rule);
+            if (!empty($ruleHtml)) {
+                for ($i = 0; $i < count($ruleHtml); $i++) {
+                    $check = $this->checkXpath($ruleHtml[$i]);
+                    if ($check === false) {
 
-                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
-                } else {
-                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
-                }
+                        $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                    } else {
+                        $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                    }
 
-                if (!empty($valueRemove)) {
-                    $newString = $this->removeValue($valueRemove, '', $newString);
+                    if (!empty($valueRemove)) {
+                        $newString = $this->removeValue($valueRemove, '', $newString);
+                    }
+                    $htmlString = $htmlString . $newString;
                 }
-                $htmlString = $htmlString . $newString;
             }
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
         }
+
         return $htmlString;
     }
 
