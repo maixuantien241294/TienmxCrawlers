@@ -63,8 +63,8 @@ class CrawlerCateTrait
                                     $testElement = substr($href, '0', 1);
                                     if ($testElement != '/') {
                                         $href = $this->linkWebsite . '/' . $href;
-                                    }else{
-                                        $href = $this->linkWebsite  . $href;
+                                    } else {
+                                        $href = $this->linkWebsite . $href;
                                     }
                                     //$href = $this->linkWebsite . $href;
                                 } else {
@@ -118,8 +118,8 @@ class CrawlerCateTrait
                                 $testElement = substr($href, '0', 1);
                                 if ($testElement != '/') {
                                     $href = $this->linkWebsite . '/' . $href;
-                                }else{
-                                    $href = $this->linkWebsite  . $href;
+                                } else {
+                                    $href = $this->linkWebsite . $href;
                                 }
 //                                $href = $this->linkWebsite . $href;
                             } else {
@@ -178,113 +178,136 @@ class CrawlerCateTrait
         /**
          * @desc Check is dom or xpath
          */
-        $check = $this->checkXpath($this->rules);
-        $temp = [];
-
-        if ($check === false) {
-
-            //parse theo DOM
-            //$this->rules = 'div#grid-container[class=tab-pane active]  div[class=category-product]  div[class=row]  div[class=col-sm-6]  div[class=products]  div[class=product]  div  h3  a';
-            $dom = HtmlDomParser::str_get_html($content);
-            $element = $dom->find($this->rules);
-            if (count($element) > 0) {
-                foreach ($element as $item) {
-                    $href = trim($item->getAttribute('href'));
-                    if (!empty($href)) {
-                        if (!preg_match('/' . $this->domain . '/', $href, $match)
-                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                            /**
-                             * @kiêm tra xem phần tử đầu có dấu '/'
-                             */
-                            $testElement = substr($href, '0', 1);
-                            if ($testElement != '/') {
-                                $href = $this->linkWebsite . '/' . $href;
-                            }else{
-                                $href = $this->linkWebsite  . $href;
-                            }
-
-                        } else {
-                            /**
-                             * @kiểm tra xem có domain không
-                             */
-                            $parse = parse_url($href);
-                            if (!isset($parse['host'])) {
-                                $testElement = substr($href, '0', 1);
-                                if ($testElement != '/') {
-                                    $href = $this->linkWebsite . '/' . $href;
-                                } else {
-                                    $href = $this->linkWebsite . $href;
-                                }
-                            }
-                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                                $href = "http:" . $href;
-                            }
-                        }
-                        $dataParser = [
-                            'href' => $href,
-                            'text' => $item->text(),
-                        ];
-                        array_push($temp, $dataParser);
-                    }
-
+        $ruleHtml = $this->getRuleHtml($this->rules);
+        $tempAll = [];
+        if (!empty($ruleHtml)) {
+            for ($i = 0; $i < count($ruleHtml); $i++) {
+                $temp = [];
+                $check = $this->checkXpath($ruleHtml[$i]);
+                if ($check === false) {
+                    $temp = $this->__parseItemByDom($ruleHtml[$i], $content);
+                } else {
+                    $temp = $this->__parseItemXpath($ruleHtml[$i], $content);
                 }
-            }
-        } else {
-
-            $html = new \DOMDocument();
-            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-
-            $crawler = new \DOMXPath($html);
-            $nodelist = $crawler->query($this->rules);
-
-            if ($nodelist->length > 0) {
-                foreach ($nodelist as $item) {
-                    $href = trim($item->getAttribute('href'));
-
-                    if (!empty($href)) {
-                        if (!preg_match('/' . $this->domain . '/', $href, $match)
-                            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-                            /**
-                             * @kiêm tra xem phần tử đầu có dấu '/'
-                             */
-                            $testElement = substr($href, '0', 1);
-                            if ($testElement != '/') {
-                                $href = $this->linkWebsite . '/' . $href;
-                            }else{
-                                $href = $this->linkWebsite  . $href;
-                            }
-                            //$href = $this->linkWebsite . $href;
-                        } else {
-                            /**
-                             * @kiểm tra xem có domain không
-                             */
-                            $parse = parse_url($href);
-                            if (!isset($parse['host'])) {
-                                $testElement = substr($href, '0', 1);
-                                if ($testElement != '/') {
-                                    $href = $this->linkWebsite . '/' . $href;
-                                } else {
-                                    $href = $this->linkWebsite . $href;
-                                }
-                            }
-                            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
-                                $href = "http:" . $href;
-                            }
-                        }
-                        $title = trim($item->getAttribute('title'));
-
-                        $dataParser = [
-                            'href' => $href,
-                            'text' => empty($title) ? trim($item->nodeValue) : $title,
-                        ];
-                        array_push($temp, $dataParser);
-                    }
+                if (!empty($temp)) ;
+                for ($n = 0; $n < count($temp); $n++) {
+                    array_push($tempAll, $temp[$n]);
                 }
             }
         }
+        return $tempAll;
+    }
 
+    /**
+     * @param $rules
+     * @param $content
+     */
+    public function __parseItemByDom($rules, $content)
+    {
+        $temp = [];
+        $dom = HtmlDomParser::str_get_html($content);
+        $element = $dom->find($rules);
+        if (count($element) > 0) {
+            foreach ($element as $item) {
+                $href = trim($item->getAttribute('href'));
+                if (!empty($href)) {
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        /**
+                         * @kiêm tra xem phần tử đầu có dấu '/'
+                         */
+                        $testElement = substr($href, '0', 1);
+                        if ($testElement != '/') {
+                            $href = $this->linkWebsite . '/' . $href;
+                        } else {
+                            $href = $this->linkWebsite . $href;
+                        }
+
+                    } else {
+                        /**
+                         * @kiểm tra xem có domain không
+                         */
+                        $parse = parse_url($href);
+                        if (!isset($parse['host'])) {
+                            $testElement = substr($href, '0', 1);
+                            if ($testElement != '/') {
+                                $href = $this->linkWebsite . '/' . $href;
+                            } else {
+                                $href = $this->linkWebsite . $href;
+                            }
+                        }
+                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                            $href = "http:" . $href;
+                        }
+                    }
+                    $dataParser = [
+                        'href' => $href,
+                        'text' => $item->text(),
+                    ];
+                    array_push($temp, $dataParser);
+                }
+
+            }
+        }
         return $temp;
     }
+
+    public function __parseItemXpath($rules, $content)
+    {
+        $temp = [];
+        $html = new \DOMDocument();
+        @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+
+        $crawler = new \DOMXPath($html);
+        $nodelist = $crawler->query($rules);
+
+        if ($nodelist->length > 0) {
+            foreach ($nodelist as $item) {
+                $href = trim($item->getAttribute('href'));
+
+                if (!empty($href)) {
+                    if (!preg_match('/' . $this->domain . '/', $href, $match)
+                        && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+                        /**
+                         * @kiêm tra xem phần tử đầu có dấu '/'
+                         */
+                        $testElement = substr($href, '0', 1);
+                        if ($testElement != '/') {
+                            $href = $this->linkWebsite . '/' . $href;
+                        } else {
+                            $href = $this->linkWebsite . $href;
+                        }
+                        //$href = $this->linkWebsite . $href;
+                    } else {
+                        /**
+                         * @kiểm tra xem có domain không
+                         */
+                        $parse = parse_url($href);
+                        if (!isset($parse['host'])) {
+                            $testElement = substr($href, '0', 1);
+                            if ($testElement != '/') {
+                                $href = $this->linkWebsite . '/' . $href;
+                            } else {
+                                $href = $this->linkWebsite . $href;
+                            }
+                        }
+                        if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                            $href = "http:" . $href;
+                        }
+                    }
+                    $title = trim($item->getAttribute('title'));
+
+                    $dataParser = [
+                        'href' => $href,
+                        'text' => empty($title) ? trim($item->nodeValue) : $title,
+                    ];
+                    array_push($temp, $dataParser);
+                }
+            }
+        }
+        return $temp;
+    }
+
 
     public function checkXpath($rule)
     {
@@ -335,5 +358,29 @@ class CrawlerCateTrait
             }
         }
         return $result;
+    }
+
+    public function getRuleHtml($rule)
+    {
+        $listRule = [];
+
+        $ruleData = explode('|', $rule);
+        if (count($ruleData) > 0) {
+            for ($i = 0; $i < count($ruleData); $i++) {
+                $newRule = $this->getRules(trim($ruleData[$i]));
+                array_push($listRule, $newRule);
+            }
+        }
+        return $listRule;
+    }
+
+    public function getRules($rule)
+    {
+        $ruleParse = $rule;
+        $ruleData = explode(',', $rule);
+        if (count($ruleData) > 0) {
+            $ruleParse = $ruleData[count($ruleData) - 1];
+        }
+        return $ruleParse;
     }
 }
