@@ -32,14 +32,15 @@ var a = (async function example() {
         if (typeof newArray.dom_click != 'undefined' && newArray.dom_click.length != 0) {
             // await driver.sleep(1000);
             for (var i = 0; i < newArray.dom_click.length; i++) {
-                console.log(data.dom_click[i]);
                 await driver.sleep(1000);
                 var existed = await driver.findElement(By.css(newArray.dom_click[i])).then(function () {
                     return true; //it existed
                 }, function (err) {
                     return false;
                 });
+                console.log(existed);
                 if (existed) {
+                    console.log(newArray.dom_click[i]);
                     await driver.findElement(By.css(newArray.dom_click[i])).click();
                 }
             }
@@ -52,12 +53,15 @@ var a = (async function example() {
             console.log('Not get content');
             process.exit(0);
         });
-
+        await driver.close();
+        await driver.quit();
     }catch(err) {
+        await driver.close();
         await driver.quit();
         process.exit(1);
     }
     finally {
+        await driver.close();
         await driver.quit();
         process.exit(0);
     }

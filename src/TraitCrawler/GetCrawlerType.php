@@ -182,7 +182,7 @@ class GetCrawlerType
                     $content = $respone['content'];
                     break;
                 case $this->crawlerSelenium:
-                    $respone = $this->crawlerBySelenium($data, $server = 1);
+                    $respone = $this->crawlerBySelenium($data, $server);
                     if ($respone['errors'] == true) {
                         $return['message'] = 'Không lấy được dữ liệu';
                         return $return;

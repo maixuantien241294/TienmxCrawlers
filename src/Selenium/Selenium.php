@@ -14,10 +14,6 @@ class Selenium
     public function __construct()
     {
         $this->config = [];
-        // default config
-//        $this->config['goto']['waitUntil'] = ['load', 'domcontentloaded', 'networkidle0', 'networkidle2'];
-//        $this->config['viewport']['width'] = 1024;
-//        $this->config['viewport']['height'] = 800;
 
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
@@ -25,6 +21,7 @@ class Selenium
         $this->executableRequest = __DIR__ . '/js/request.js';
         $this->executable = __DIR__ . '/js/index.js';
         $this->executableServer = __DIR__ . '/js/server_index.js';
+        $this->executableServerRequest = __DIR__ . '/js/server_request.js';
         ini_set('max_execution_time', 300);
         set_time_limit(300);
     }
@@ -44,7 +41,7 @@ class Selenium
         $param = $this->getParams($config);
         $this->config = $this->merge($this->config, $config);
         if ($server == 1) {
-            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE');
+            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE','/var/www/crawler.muazi.vn/storage/app/');
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableServer) . ' ' . $param;
         } else {
@@ -53,19 +50,29 @@ class Selenium
         }
         exec($fullCommand, $output, $returnVal);
         $content = "";
-        if ($returnVal == 0) {
-            if (\Storage::exists('download_file.php')) {
-                $content = \Storage::get('download_file.php');
-                /**
-                 * remove file
-                 */
-                \Storage::delete('download_file.php');
+        if($server == 1){
+            if ($returnVal == 0) {
+                if (\Storage::exists('download_file.php')) {
+                    $content = \Storage::get('download_file.php');
+                    /**
+                     * remove file
+                     */
+                    \Storage::put('download_file.php', "");
+                }
             }
+            $result = [
+                'ouput' => $content,
+                'returnVal' => $returnVal
+            ];
+        }else{
+            $result = [
+                'ouput' => $output,
+                'returnVal' => $returnVal
+            ];
         }
-        $result = [
-            'ouput' => $content,
-            'returnVal' => $returnVal
-        ];
+
+
+
         return $result;
     }
 

@@ -69,11 +69,22 @@ class CrawlerSrc
                     if ($tagsSrc[$i] == 'style') {
                         $style = $item->getAttribute('style');
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
-                        preg_match($regex, $style, $matches);
+                        $regex2 = '/background[-image]*:.*[\s]*url\(["|\']+(.*)["|\']+\)/';
+                        preg_match($regex, $image, $matches);
+
+
                         if (isset($matches) && count($matches) > 0) {
                             $image = isset($matches[2]) ? $matches[2] : "";
                             if (!empty($image)) {
                                 $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                            }
+                        } else {
+                            preg_match($regex2, $image, $matches2);
+                            if (isset($matches2) && count($matches2) > 0) {
+                                $image = isset($matches2[2]) ? $matches2[2] : "";
+                                if (!empty($image)) {
+                                    $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                                }
                             }
                         }
                     } else {
@@ -118,12 +129,23 @@ class CrawlerSrc
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
                     if ($item == 'style') {
+
+
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
+                        $regex2 = '/background[-image]*:.*[\s]*url\(["|\']+(.*)["|\']+\)/';
                         preg_match($regex, $image, $matches);
                         if (isset($matches) && count($matches) > 0) {
                             $image = isset($matches[2]) ? $matches[2] : "";
                             if (!empty($image)) {
                                 $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                            }
+                        } else {
+                            preg_match($regex2, $image, $matches2);
+                            if (isset($matches2) && count($matches2) > 0) {
+                                $image = isset($matches2[1]) ? $matches2[1] : "";
+                                if (!empty($image)) {
+                                    $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
+                                }
                             }
                         }
                     }

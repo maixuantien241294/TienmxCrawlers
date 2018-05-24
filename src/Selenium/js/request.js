@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('http://localhost:31000', { reconnect: true });
+var socket = io.connect('http://localhost:3100', { reconnect: true });
 var newArray = {
     link: [],
     dom_click: []
@@ -18,10 +18,10 @@ process.argv.slice(2).map(function(arg, i) {
 
 
 socket.on('connect', function() {
-        // console.log('Connected');
-        send();
-        receive();
-    })
+    // console.log('Connected');
+    send();
+    receive();
+})
     .on('connect_error', function() {
         // console.log('Conn error');
         const execFile = require('child_process').execFile;
