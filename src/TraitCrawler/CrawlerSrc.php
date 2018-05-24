@@ -66,7 +66,7 @@ class CrawlerSrc
         if (count($explodeLink) === 4) {
             $linkWebsite = substr($linkWebsite, 0, strlen($linkWebsite) - 1);
         }
-
+        $linkWebsite = $this->getUrl($linkWebsite);
         if (count($element)) {
             foreach ($element as $item) {
                 for ($i = 0; $i < count($tagsSrc); $i++) {
@@ -83,7 +83,7 @@ class CrawlerSrc
                                 $image = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
                             }
                         } else {
-                            preg_match($regex2, $image, $matches2);
+                            preg_match($regex2, $style, $matches2);
                             if (isset($matches2) && count($matches2) > 0) {
                                 $image = isset($matches2[2]) ? $matches2[2] : "";
                                 if (!empty($image)) {
@@ -95,10 +95,8 @@ class CrawlerSrc
                         $image = $item->getAttribute($tagsSrc[$i]);
                     }
                     if (!empty($image)) {
-                        if (!preg_match('/' . $domain . '/', $image, $match)
-                            && empty(parse_url($image, PHP_URL_HOST)) && !empty($image)) {
-                            $image = $linkWebsite . $image;
-                        }
+                        
+                        $image = $this->__check_url($image, $domain, $linkWebsite);
                         array_push($htmlString, $image);
                     }
                 }
@@ -122,7 +120,7 @@ class CrawlerSrc
         if (count($explodeLink) === 4) {
             $linkWebsite = substr($linkWebsite, 0, strlen($linkWebsite) - 1);
         }
-
+        $linkWebsite = $this->getUrl($linkWebsite);
         $ruleParse = $this->getRules($rule);
         $tagsSrc = explode(',', $tagsSrc);
         foreach ($tagsSrc as $item) {
@@ -132,6 +130,8 @@ class CrawlerSrc
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
+                    
+
                     if ($item == 'style') {
 
 
@@ -145,6 +145,7 @@ class CrawlerSrc
                             }
                         } else {
                             preg_match($regex2, $image, $matches2);
+
                             if (isset($matches2) && count($matches2) > 0) {
                                 $image = isset($matches2[1]) ? $matches2[1] : "";
                                 if (!empty($image)) {
@@ -153,10 +154,8 @@ class CrawlerSrc
                             }
                         }
                     }
-                    if (!preg_match('/' . $domain . '/', $image, $match)
-                        && empty(parse_url($image, PHP_URL_HOST)) && !empty($image)) {
-                        $image = $linkWebsite . $image;
-                    }
+
+                    $image = $this->__check_url($image, $domain, $linkWebsite);
                     array_push($htmlString, $image);
                 }
                 break;

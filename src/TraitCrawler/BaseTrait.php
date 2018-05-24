@@ -196,4 +196,32 @@ trait BaseTrait
         }
         return $url;
     }
+
+    protected function __check_url($href, $domain, $linkWeb)
+    {
+        if (!preg_match('/' . $domain . '/', $href, $match)
+            && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+            $testElement = substr($href, '0', 1);
+            if ($testElement != '/') {
+                $href = $linkWeb . '/' . $href;
+            } else {
+                $href = $linkWeb . $href;
+            }
+        } else {
+            $parse = parse_url($href);
+            if (!isset($parse['host'])) {
+                $testElement = substr($href, '0', 1);
+                if ($testElement != '/') {
+                    $href = $linkWeb . '/' . $href;
+                } else {
+                    $href = $linkWeb . $href;
+                }
+            }
+            if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
+                $href = "http:" . $href;
+            }
+
+        }
+        return $href;
+    }
 }
