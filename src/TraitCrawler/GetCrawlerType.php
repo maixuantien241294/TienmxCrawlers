@@ -41,6 +41,10 @@ class GetCrawlerType
         $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         try {
+            if (empty($contentHtml)) {
+                $return['message'] = "Khong co content";
+                return $return;
+            }
             $temp = [];
             foreach ($rules as $k => $val) {
                 $htmlString = "";

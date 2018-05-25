@@ -30,6 +30,9 @@ class CrawlerCateTrait
     public function parseRulesCategory($content, $paramsRemove = null)
     {
         try {
+            if (empty($content)) {
+                return [];
+            }
             /**
              * @remove '/' cuối của $linkWebsite
              */
@@ -167,6 +170,9 @@ class CrawlerCateTrait
      */
     public function parseRuleItemByCategory($content)
     {
+        if (empty($content)) {
+            return [];
+        }
         /**
          * @remove '/' cuối của $linkWebsite
          */
@@ -184,7 +190,7 @@ class CrawlerCateTrait
         if (!empty($ruleHtml)) {
             for ($i = 0; $i < count($ruleHtml); $i++) {
                 $ruleHtml[$i] = trim($ruleHtml[$i]);
-                if(!empty($ruleHtml[$i])){
+                if (!empty($ruleHtml[$i])) {
                     $temp = [];
                     $check = $this->checkXpath($ruleHtml[$i]);
                     if ($check === false) {
@@ -372,7 +378,7 @@ class CrawlerCateTrait
         if (count($ruleData) > 0) {
             for ($i = 0; $i < count($ruleData); $i++) {
                 $ruleData[$i] = trim($ruleData[$i]);
-                if(!empty($ruleData[$i])){
+                if (!empty($ruleData[$i])) {
                     $newRule = $this->getRules($ruleData[$i]);
                     array_push($listRule, $newRule);
                 }

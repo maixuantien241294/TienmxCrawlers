@@ -61,17 +61,20 @@ class CrawlerHtml
 
     protected function removeDom($contentHtml, $valueRemoveXpath)
     {
+
         $valueXpath = explode(',', $valueRemoveXpath);
-        $html1 = HtmlDomParser::str_get_html($contentHtml);
-        for ($i = 0; $i < count($valueXpath); $i++) {
-            $query = $html1->find($valueXpath[$i]);
-            if (count($query) > 0) {
-                foreach ($query as $value) {
-                    $value->outertext = '';
+        if(!empty($contentHtml)){
+            $html1 = HtmlDomParser::str_get_html($contentHtml);
+            for ($i = 0; $i < count($valueXpath); $i++) {
+                $query = $html1->find(trim($valueXpath[$i]));
+                if (count($query) > 0) {
+                    foreach ($query as $value) {
+                        $value->outertext = '';
+                    }
                 }
             }
+            $contentHtml = $html1->save();
         }
-        $contentHtml = $html1->save();
         return $contentHtml;
     }
 
