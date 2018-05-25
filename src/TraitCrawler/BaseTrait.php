@@ -32,8 +32,11 @@ trait BaseTrait
         $ruleData = explode('|', $rule);
         if (count($ruleData) > 0) {
             for ($i = 0; $i < count($ruleData); $i++) {
-                $newRule = $this->getRules(trim($ruleData[$i]));
-                array_push($listRule, $newRule);
+                $ruleData[$i] = trim($ruleData[$i]);
+                if(!empty($ruleData[$i])){
+                    $newRule = $this->getRules(trim($ruleData[$i]));
+                    array_push($listRule, $newRule);
+                }
             }
         }
         return $listRule;

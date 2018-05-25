@@ -179,20 +179,25 @@ class CrawlerCateTrait
          * @desc Check is dom or xpath
          */
         $ruleHtml = $this->getRuleHtml($this->rules);
+
         $tempAll = [];
         if (!empty($ruleHtml)) {
             for ($i = 0; $i < count($ruleHtml); $i++) {
-                $temp = [];
-                $check = $this->checkXpath($ruleHtml[$i]);
-                if ($check === false) {
-                    $temp = $this->__parseItemByDom($ruleHtml[$i], $content);
-                } else {
-                    $temp = $this->__parseItemXpath($ruleHtml[$i], $content);
+                $ruleHtml[$i] = trim($ruleHtml[$i]);
+                if(!empty($ruleHtml[$i])){
+                    $temp = [];
+                    $check = $this->checkXpath($ruleHtml[$i]);
+                    if ($check === false) {
+                        $temp = $this->__parseItemByDom($ruleHtml[$i], $content);
+                    } else {
+                        $temp = $this->__parseItemXpath($ruleHtml[$i], $content);
+                    }
+                    if (!empty($temp)) ;
+                    for ($n = 0; $n < count($temp); $n++) {
+                        array_push($tempAll, $temp[$n]);
+                    }
                 }
-                if (!empty($temp)) ;
-                for ($n = 0; $n < count($temp); $n++) {
-                    array_push($tempAll, $temp[$n]);
-                }
+
             }
         }
         return $tempAll;
@@ -257,7 +262,6 @@ class CrawlerCateTrait
         $temp = [];
         $html = new \DOMDocument();
         @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
-
         $crawler = new \DOMXPath($html);
         $nodelist = $crawler->query($rules);
 
@@ -367,8 +371,12 @@ class CrawlerCateTrait
         $ruleData = explode('|', $rule);
         if (count($ruleData) > 0) {
             for ($i = 0; $i < count($ruleData); $i++) {
-                $newRule = $this->getRules(trim($ruleData[$i]));
-                array_push($listRule, $newRule);
+                $ruleData[$i] = trim($ruleData[$i]);
+                if(!empty($ruleData[$i])){
+                    $newRule = $this->getRules($ruleData[$i]);
+                    array_push($listRule, $newRule);
+                }
+
             }
         }
         return $listRule;

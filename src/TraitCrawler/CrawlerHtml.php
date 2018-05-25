@@ -24,28 +24,31 @@ class CrawlerHtml
             $ruleHtml = $this->getRuleHtml($rule);
             if (!empty($ruleHtml)) {
                 for ($i = 0; $i < count($ruleHtml); $i++) {
-                    $check = $this->checkXpath($ruleHtml[$i]);
-                    if ($check === false) {
-                        $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
-                    } else {
-                        $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
-                    }
-                    /**
-                     * @remove by dom or expath
-                     */
-                    if (!empty($valueRemoveXpath)) {
-
-                        $checkRemove = $this->checkXpath($valueRemoveXpath);
-                        if ($checkRemove === false) {
-                            $newString = $this->removeDom($newString, $valueRemoveXpath);
+                    $ruleHtml[$i] = trim($ruleHtml[$i]);
+                    if(!empty($ruleHtml[$i])){
+                        $check = $this->checkXpath($ruleHtml[$i]);
+                        if ($check === false) {
+                            $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
                         } else {
-                            $newString = $this->removeXpath($newString, $valueRemoveXpath);
+                            $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
                         }
+                        /**
+                         * @remove by dom or expath
+                         */
+                        if (!empty($valueRemoveXpath)) {
+
+                            $checkRemove = $this->checkXpath($valueRemoveXpath);
+                            if ($checkRemove === false) {
+                                $newString = $this->removeDom($newString, $valueRemoveXpath);
+                            } else {
+                                $newString = $this->removeXpath($newString, $valueRemoveXpath);
+                            }
+                        }
+                        if (!empty($valueRemove)) {
+                            $newString = $this->removeValue($valueRemove, '', $newString);
+                        }
+                        $htmlString = $htmlString . $newString;
                     }
-                    if (!empty($valueRemove)) {
-                        $newString = $this->removeValue($valueRemove, '', $newString);
-                    }
-                    $htmlString = $htmlString . $newString;
                 }
 
             }
