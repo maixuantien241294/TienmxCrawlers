@@ -33,7 +33,7 @@ trait BaseTrait
         if (count($ruleData) > 0) {
             for ($i = 0; $i < count($ruleData); $i++) {
                 $ruleData[$i] = trim($ruleData[$i]);
-                if(!empty($ruleData[$i])){
+                if (!empty($ruleData[$i])) {
                     $newRule = $this->getRules(trim($ruleData[$i]));
                     array_push($listRule, $newRule);
                 }
@@ -124,13 +124,26 @@ trait BaseTrait
         if (count($explodeLink) === 4) {
             $link = substr($link, 0, strlen($link) - 1);
         }
+
+        $linkCrawler = isset($data['link']) ? $data['link'] : "";
         /**
          * @desc replace link css
          */
         $header = '<base href="' . $link . '" target="_blank">';
         $header .= '<base href="' . $link . '/' . '" target="_blank">';
-//        $content = str_replace('<head[^>]*id=\"(.*?)\">', '<head>' . $header, $content);
-        $content = str_replace('<head>', '<head>' . $header, $content);
+        if (!empty($linkCrawler)) {
+            $linkCrawler = $this->getUrl($linkCrawler);
+            $header = '<base href="' . $linkCrawler . '" target="_blank">';
+            $header .= '<base href="' . $linkCrawler . '/' . '" target="_blank">';
+        }
+
+        preg_match('%<(head)[^>]*>%s', $content, $matches);
+        if (count($matches) > 0) {
+            $content = preg_replace('%<(head)[^>]*>%s', '<head>' . $header, $content);
+        } else {
+            $content = str_replace('<head>', '<head>' . $header, $content);
+        }
+
         $dataHeader = '<link rel="stylesheet" type="text/css" href="' . env('APP_DOMAIN', '') . 'getruler/inject.css?=v' . VERSION . '">';
         $dataHeader .= '<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>';
         $dataHeader .= '<script>if(typeof $ != \'undefined\'){var _$ = $;}else{var _$ = false;}</script>';
@@ -204,6 +217,14 @@ trait BaseTrait
     {
         if (!preg_match('/' . $domain . '/', $href, $match)
             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+            /**
+             * @desc : Remove ../ của href
+             */
+            $testHref = substr($href, '0', 2);
+            $href = ($testHref != "..") ? $href : substr($href, 2, strlen($href));
+            /**
+             * @desc : Test
+             */
             $testElement = substr($href, '0', 1);
             if ($testElement != '/') {
                 $href = $linkWeb . '/' . $href;
@@ -219,6 +240,17 @@ trait BaseTrait
                 } else {
                     $href = $linkWeb . $href;
                 }
+            } else {
+
+                $scheme = isset($parse['scheme']) ? $parse['scheme'] : "";
+                $host = isset($parse['host']) ? $parse['host'] : "";
+                $path = isset($parse['path']) ? $parse['path'] : "";
+
+                if (!empty($path)) {
+                    $testPath = substr($path, '0', 2);
+                    $path = ($testPath != "..") ? $path : substr($path, 2, strlen($path));
+                }
+                $href = $scheme . '://' . $host . $path;
             }
             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                 $href = "http:" . $href;

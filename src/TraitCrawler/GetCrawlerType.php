@@ -18,6 +18,7 @@ class GetCrawlerType
     public $plaintext = 'plaintext';
     public $content = 'content';
     public $src = 'src';
+    public $misdn = 'phone_number';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
     public $crawlerPhantomjs = 4;
@@ -109,6 +110,15 @@ class GetCrawlerType
                             $htmlString = "";
                         }
 
+                        break;
+                    case $this->misdn:
+                        $query = $val['value'];
+                        $htmlString = "";
+
+                        $cMisdn = new CrawlerMisdn();
+                        if (!empty($query)) {
+                            $htmlString = $cMisdn->executeMisdn($contentHtml, $query, $linkWebsite, $domain);
+                        }
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;

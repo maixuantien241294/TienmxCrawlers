@@ -19,13 +19,13 @@ class CrawlerHtml
     public function executeHtml($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download)
     {
         $htmlString = "";
-
-        try{
+        $linkWebsite = $this->getUrl($linkWebsite);
+        try {
             $ruleHtml = $this->getRuleHtml($rule);
             if (!empty($ruleHtml)) {
                 for ($i = 0; $i < count($ruleHtml); $i++) {
                     $ruleHtml[$i] = trim($ruleHtml[$i]);
-                    if(!empty($ruleHtml[$i])){
+                    if (!empty($ruleHtml[$i])) {
                         $check = $this->checkXpath($ruleHtml[$i]);
                         if ($check === false) {
                             $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock);
@@ -52,7 +52,7 @@ class CrawlerHtml
                 }
 
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
 
@@ -63,7 +63,7 @@ class CrawlerHtml
     {
 
         $valueXpath = explode(',', $valueRemoveXpath);
-        if(!empty($contentHtml)){
+        if (!empty($contentHtml)) {
             $html1 = HtmlDomParser::str_get_html($contentHtml);
             for ($i = 0; $i < count($valueXpath); $i++) {
                 $query = $html1->find(trim($valueXpath[$i]));
@@ -105,7 +105,7 @@ class CrawlerHtml
 
     public function parseDom($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock)
     {
-        // $rule = 'div#top-banner-and-menu  div[class=container]  div[class=row single-product]  div[class=col-xs-12 col-sm-12 col-md-9 homebanner-holder]  div[class=detail-block]  div[class=row]  div[class=col-sm-6]  div  div  p  span  span  span';
+        $linkWebsite = $this->getUrl($linkWebsite);
         $dom = HtmlDomParser::str_get_html($contentHtml);
         $element = $dom->find($rule);
         $html = "";
@@ -126,39 +126,14 @@ class CrawlerHtml
             if (count($listImg) > 0) {
                 foreach ($listImg as $key => $item) {
                     for ($j = 0; $j < count($tagsSrc); $j++) {
-                        $oldImg = $item->getAttribute($tagsSrc[$j]);
+                        $oldImg = $item->getAttribute(trim($tagsSrc[$j]));
                         if (!empty($oldImg)) {
-                            $newImg = "";
-                            if ($tagsSrc[$j] == 'style') {
-                                $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
-                                preg_match($regex, $image, $matches);
-                                if (isset($matches) && count($matches) > 0) {
-                                    $image = isset($matches[2]) ? $matches[2] : "";
-                                    if (!empty($image)) {
-                                        $newImg = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
-                                    }
-                                }
-                            } else {
-                                $newImg = $oldImg;
-                                if (!preg_match('/' . $domain . '/', $oldImg, $match)
-                                    && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
-                                    $newImg = $linkWebsite . $oldImg;
-                                }
-                            }
+                            $newImg = $this->__check_url($oldImg,$domain,$linkWebsite);
+
                             if (!empty($newImg)) {
                                 $item->setAttribute('src', $newImg);
-//                                $listImg->item($key)->setAttribute('src', $oldImg);
                             }
                         }
-//                        if (!empty($oldImg)) {
-//                            if (!preg_match('/' . $domain . '/', $oldImg, $match)
-//                                && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
-//                                $oldImg = $linkWebsite . $oldImg;
-//                                if ($this->validImage($oldImg)) {
-//                                    $item->setAttribute('src', $oldImg);
-//                                }
-//                            }
-//                        }
                     }
                 }
             }
@@ -195,25 +170,9 @@ class CrawlerHtml
                 if (intval($listImg->length) > 0) {
                     foreach ($listImg as $key => $item) {
                         for ($j = 0; $j < count($tagsSrc); $j++) {
-                            $oldImg = $listImg->item($key)->getAttribute($tagsSrc[$j]);
+                            $oldImg = $listImg->item($key)->getAttribute(trim($tagsSrc[$j]));
                             if (!empty($oldImg)) {
-                                $newImg = "";
-                                if ($tagsSrc[$j] == 'style') {
-                                    $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
-                                    preg_match($regex, $image, $matches);
-                                    if (isset($matches) && count($matches) > 0) {
-                                        $image = isset($matches[2]) ? $matches[2] : "";
-                                        if (!empty($image)) {
-                                            $newImg = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $image);
-                                        }
-                                    }
-                                } else {
-                                    $newImg = $oldImg;
-                                    if (!preg_match('/' . $domain . '/', $oldImg, $match)
-                                        && empty(parse_url($oldImg, PHP_URL_HOST)) && !empty($oldImg)) {
-                                        $newImg = $linkWebsite . $oldImg;
-                                    }
-                                }
+                                $newImg = $this->__check_url($oldImg,$domain,$linkWebsite);
                                 if (!empty($newImg)) {
                                     $listImg->item($key)->setAttribute('src', $newImg);
                                 }

@@ -31,6 +31,7 @@ class CrawlerSrc
         $htmlString = [];
         try {
             $ruleHtml = $this->getRuleHtml($rule);
+            \Log::info(json_encode($ruleHtml), ['Luat_cate' => 'Luat_cate']);
             if (!empty($ruleHtml)) {
                 for ($i = 0; $i < count($ruleHtml); $i++) {
                     $check = $this->checkXpath($ruleHtml[$i]);
@@ -67,9 +68,17 @@ class CrawlerSrc
             $linkWebsite = substr($linkWebsite, 0, strlen($linkWebsite) - 1);
         }
         $linkWebsite = $this->getUrl($linkWebsite);
+
         if (count($element)) {
             foreach ($element as $item) {
                 for ($i = 0; $i < count($tagsSrc); $i++) {
+                    /**
+                     * @tienmx
+                     * @date 25/05/2018
+                     * @mô tả : Xóa khoảng trắng
+                     */
+                    $tagsSrc[$i] = trim($tagsSrc[$i]);
+
                     if ($tagsSrc[$i] == 'style') {
                         $style = $item->getAttribute('style');
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
@@ -95,7 +104,7 @@ class CrawlerSrc
                         $image = $item->getAttribute($tagsSrc[$i]);
                     }
                     if (!empty($image)) {
-                        
+
                         $image = $this->__check_url($image, $domain, $linkWebsite);
                         array_push($htmlString, $image);
                     }
@@ -124,16 +133,18 @@ class CrawlerSrc
         $ruleParse = $this->getRules($rule);
         $tagsSrc = explode(',', $tagsSrc);
         foreach ($tagsSrc as $item) {
-
+            /**
+             * @tienmx
+             * @date 25/05/2018
+             * @mô tả : Xóa khoảng trắng
+             */
+            $item = trim($item);
             $ruleImg = $ruleParse . '/@' . $item;
             $nodelist = $xpath->query($ruleImg);
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
-                    
-
                     if ($item == 'style') {
-
 
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
                         $regex2 = '/background[-image]*:.*[\s]*url\(["|\']+(.*)["|\']+\)/';
