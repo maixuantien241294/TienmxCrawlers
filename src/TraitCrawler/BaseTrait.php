@@ -215,11 +215,14 @@ trait BaseTrait
 
     protected function __check_url($href, $domain, $linkWeb)
     {
+
         if (!preg_match('/' . $domain . '/', $href, $match)
             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
+            dd(231321);
             /**
              * @desc : Remove ../ của href
              */
+
             $testHref = substr($href, '0', 2);
             $href = ($testHref != "..") ? $href : substr($href, 2, strlen($href));
             /**
@@ -232,8 +235,11 @@ trait BaseTrait
                 $href = $linkWeb . $href;
             }
         } else {
+
             $parse = parse_url($href);
+
             if (!isset($parse['host'])) {
+
                 $testElement = substr($href, '0', 1);
                 if ($testElement != '/') {
                     $href = $linkWeb . '/' . $href;
@@ -241,6 +247,7 @@ trait BaseTrait
                     $href = $linkWeb . $href;
                 }
             } else {
+
 
                 $scheme = isset($parse['scheme']) ? $parse['scheme'] : "";
                 $host = isset($parse['host']) ? $parse['host'] : "";
@@ -250,7 +257,12 @@ trait BaseTrait
                     $testPath = substr($path, '0', 2);
                     $path = ($testPath != "..") ? $path : substr($path, 2, strlen($path));
                 }
-                $href = $scheme . '://' . $host . $path;
+                if(!empty($scheme)){
+                    $href = $scheme . '://' . $host . $path;
+                }else{
+                    $href = '//' . $host . $path;
+                }
+
             }
             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                 $href = "http:" . $href;
