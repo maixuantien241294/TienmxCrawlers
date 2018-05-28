@@ -218,7 +218,6 @@ trait BaseTrait
 
         if (!preg_match('/' . $domain . '/', $href, $match)
             && empty(parse_url($href, PHP_URL_HOST)) && !empty($href)) {
-            dd(231321);
             /**
              * @desc : Remove ../ của href
              */

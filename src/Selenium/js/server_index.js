@@ -1,4 +1,5 @@
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const {Builder, By, Key, until} = require('selenium-webdriver');
+var firefox = require('selenium-webdriver/firefox');
 var fs = require('fs');
 var newArray = {
     link: [],
@@ -23,6 +24,7 @@ var link = newArray.link
 var a = (async function example() {
     let driver = await new Builder().forBrowser('firefox')
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
+        .setFirefoxOptions(new firefox.Options().headless())
         .build();
     try {
         await driver.get('' + link + '');
@@ -49,13 +51,13 @@ var a = (async function example() {
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file.php', profile);
-        },function (err) {
+        }, function (err) {
             console.log('Not get content');
             process.exit(0);
         });
         await driver.close();
         await driver.quit();
-    }catch(err) {
+    } catch (err) {
         await driver.close();
         await driver.quit();
         process.exit(1);
