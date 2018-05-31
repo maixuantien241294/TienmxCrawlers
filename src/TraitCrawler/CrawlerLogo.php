@@ -30,7 +30,9 @@ class CrawlerLogo
             }
         }
         $linkWebsite = $this->getUrl($linkWebsite);
-        $fevicon = $this->__check_url($fevicon,$domain,$linkWebsite);
+        if(!empty($fevicon)){
+            $fevicon = $this->__check_url($fevicon,$domain,$linkWebsite);
+        }
         return $fevicon;
     }
 }
