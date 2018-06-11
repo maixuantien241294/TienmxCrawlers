@@ -136,14 +136,14 @@ trait BaseTrait
             $header = '<base href="' . $linkCrawler . '" target="_blank">';
             $header .= '<base href="' . $linkCrawler . '/' . '" target="_blank">';
         }
-        preg_match('%<head[^>]*>%s', $content, $matches);
+
+        preg_match('%<(head)[^>]*>%s', $content, $matches);
         if (count($matches) > 0) {
-            if (isset($matches[0])) {
-                $content = str_replace($matches[0], '<head>' . $header, $content);
-            }
+            $content = preg_replace('%<(head)[^>]*>%s', '<head>' . $header, $content);
         } else {
             $content = str_replace('<head>', '<head>' . $header, $content);
         }
+
         $dataHeader = '<link rel="stylesheet" type="text/css" href="' . env('APP_DOMAIN', '') . 'getruler/inject.css?=v' . VERSION . '">';
         $dataHeader .= '<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>';
         $dataHeader .= '<script>if(typeof $ != \'undefined\'){var _$ = $;}else{var _$ = false;}</script>';
@@ -256,9 +256,9 @@ trait BaseTrait
                     $testPath = substr($path, '0', 2);
                     $path = ($testPath != "..") ? $path : substr($path, 2, strlen($path));
                 }
-                if (!empty($scheme)) {
+                if(!empty($scheme)){
                     $href = $scheme . '://' . $host . $path;
-                } else {
+                }else{
                     $href = '//' . $host . $path;
                 }
 
