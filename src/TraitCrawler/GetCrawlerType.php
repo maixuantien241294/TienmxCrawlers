@@ -140,10 +140,20 @@ class GetCrawlerType
              * @desc Lấy các thông số thẻ meta
              */
             $cMeta = new CrawlerMeta();
-            $meta = $cMeta->executeMeta($contentHtml,$linkWebsite,$domain);
+            $meta = $cMeta->executeMeta($contentHtml, $linkWebsite, $domain);
             if (!empty($temp)) {
-                if(!empty($meta)){
-                    $temp = array_merge($temp,$meta);
+
+                if (!empty($meta)) {
+                    if ($download == $this->isDownload) {
+                        $tempMeta = [];
+                        foreach ($meta as $val) {
+                            $tempMeta[$val['key']] = $val['content'];
+                        }
+                        $temp = array_merge($temp, $tempMeta);
+                    } else {
+                        $temp = array_merge($temp, $meta);
+                    }
+
                 }
                 $return['error'] = false;
                 $return['message'] = 'sucess!';
