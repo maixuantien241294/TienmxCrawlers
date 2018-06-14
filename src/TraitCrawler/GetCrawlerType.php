@@ -136,7 +136,15 @@ class GetCrawlerType
                 }
 
             }
+            /**
+             * @desc Lấy các thông số thẻ meta
+             */
+            $cMeta = new CrawlerMeta();
+            $meta = $cMeta->executeMeta($contentHtml,$linkWebsite,$domain);
             if (!empty($temp)) {
+                if(!empty($meta)){
+                    $temp = array_merge($temp,$meta);
+                }
                 $return['error'] = false;
                 $return['message'] = 'sucess!';
                 $return['content'] = $temp;

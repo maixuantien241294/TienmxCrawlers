@@ -13,6 +13,9 @@ use Sunra\PhpSimple\HtmlDomParser;
 class CrawlerPrice
 {
     use BaseTrait;
+    public $regexReplace = [
+        '*', '', '(', ')', ':', '\\', '/', '.', ' ', ','
+    ];
 
     public function executePrice($contentHtml, $rule, $valueRemove)
     {
@@ -23,7 +26,7 @@ class CrawlerPrice
             if (!empty($ruleHtml)) {
                 for ($i = 0; $i < count($ruleHtml); $i++) {
                     $ruleHtml[$i] = trim($ruleHtml[$i]);
-                    if(!empty($ruleHtml[$i])){
+                    if (!empty($ruleHtml[$i])) {
                         $check = $this->checkXpath($ruleHtml[$i]);
                         if ($check === false) {
                             $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
@@ -38,18 +41,25 @@ class CrawlerPrice
             /**
              * @desc => Kiểm tra nếu có dấu gạch ngang `-`
              */
+            $htmlString = str_replace($this->regexReplace, '', $htmlString);
+
             $expPrice = explode('-', $htmlString);
+
             if (count($expPrice) >= 1) {
                 foreach ($expPrice as $item) {
                     $priceItem = "";
                     if (!empty(trim($item))) {
                         if (preg_match_all('/\d+/', trim($item), $matches)) {
+
                             $matches = $matches[0];
+
                             foreach ($matches as $value) {
-                                $priceItem .= $value;
+                                if (strlen($value) > 4){
+                                    array_push($price, $value);
+                                }
                             }
                         }
-                        array_push($price, $priceItem);
+
                     }
 
                 }

@@ -136,13 +136,13 @@ trait BaseTrait
             $header = '<base href="' . $linkCrawler . '" target="_blank">';
             $header .= '<base href="' . $linkCrawler . '/' . '" target="_blank">';
         }
-
-        preg_match('%<(head)[^>]*>%s', $content, $matches);
-        if (count($matches) > 0) {
-            $content = preg_replace('%<(head)[^>]*>%s', '<head>' . $header, $content);
-        } else {
-            $content = str_replace('<head>', '<head>' . $header, $content);
-        }
+        $content = str_replace('<head>', '<head>' . $header, $content);
+//        preg_match('%<(head)[^>]*>%s', $content, $matches);
+//        if (count($matches) > 0) {
+//            $content = preg_replace('%<(head)[^>]*>%s', '<head>' . $header, $content);
+//        } else {
+//            $content = str_replace('<head>', '<head>' . $header, $content);
+//        }
 
         $dataHeader = '<link rel="stylesheet" type="text/css" href="' . env('APP_DOMAIN', '') . 'getruler/inject.css?=v' . VERSION . '">';
         $dataHeader .= '<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>';
