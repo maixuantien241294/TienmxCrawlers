@@ -47,10 +47,10 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(2000);
+        await driver.sleep(1000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
-            fs.writeFileSync(path + 'download_file.php', profile);
+            console.log(profile);
         }, function (err) {
             console.log('Not get content');
             process.exit(0);

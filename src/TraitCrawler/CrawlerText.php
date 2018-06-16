@@ -16,7 +16,7 @@ class CrawlerText
 
     public function executeText($contentHtml, $rule, $valueRemove)
     {
-        $htmlString = "";
+        $htmlString = [];
         try {
             $ruleHtml = $this->getRuleHtml($rule);
             if (!empty($ruleHtml)) {
@@ -26,13 +26,15 @@ class CrawlerText
 
                         $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
                     } else {
-                        $newString = $this->parseDom($contentHtml, $ruleHtml[$i], $valueRemove);
+                        $newString = $this->parseXpath($contentHtml, $ruleHtml[$i], $valueRemove);
                     }
 
                     if (!empty($valueRemove)) {
                         $newString = $this->removeValue($valueRemove, '', $newString);
                     }
-                    $htmlString = $htmlString . $newString;
+                    if(!empty(trim($newString))){
+                        array_push($htmlString, trim($newString));
+                    }
                 }
             }
         } catch (\Exception $exception) {

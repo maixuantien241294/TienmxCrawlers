@@ -18,7 +18,7 @@ class Selenium
         $this->path = 'PATH=$PATH:/usr/local/bin';
         $this->nodePath = 'NODE_PATH=`npm root -g`';
         $this->nodeBinary = 'node';
-        $this->executableRequest = __DIR__ . '/js/request.js';
+        $this->executableRequest = __DIR__ . '/js/client_request.js';
         $this->executable = __DIR__ . '/js/index.js';
         $this->executableServer = __DIR__ . '/js/server_index.js';
         $this->executableServerRequest = __DIR__ . '/js/server_request.js';
@@ -48,6 +48,8 @@ class Selenium
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
+        
+        //print_r($fullCommand);die;
         exec($fullCommand, $output, $returnVal);
         $content = "";
         if($server == 1){
@@ -57,7 +59,7 @@ class Selenium
                     /**
                      * remove file
                      */
-                    \Storage::put('download_file.php', "");
+//                    \Storage::put('download_file.php', "");
                 }
             }
             $result = [

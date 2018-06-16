@@ -19,6 +19,7 @@ class GetCrawlerType
     public $content = 'content';
     public $src = 'src';
     public $misdn = 'phone_number';
+    public $thong_so_ky_thuat = 'thong_so_ky_thuat';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
     public $crawlerPhantomjs = 4;
@@ -119,6 +120,11 @@ class GetCrawlerType
                         if (!empty($query)) {
                             $htmlString = $cMisdn->executeMisdn($contentHtml, $query, $linkWebsite, $domain);
                         }
+                        break;
+                    case $this->thong_so_ky_thuat:
+                        $cThongSoKyThuat = new CrawlerThongSoKyThuat();
+
+                        $htmlString = $cThongSoKyThuat->executeThongSo($contentHtml, $val);
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;

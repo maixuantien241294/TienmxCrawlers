@@ -15,7 +15,7 @@ class CrawlerMisdn
 {
     use BaseTrait;
     public $regexReplace = [
-        '*', '-', '(', ')', ':', '\\', '/', '.', ' '
+        '*', '-', '(84)', '(0)','(+84)', ':', '\\', '/', '.', ' '
     ];
     public $regexPhone = '/(0|84)\d{9,11}$/';
     public $regexSwitchboard = '/(028|1800|1900)\d{3,11}$/';
