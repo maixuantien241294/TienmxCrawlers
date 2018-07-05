@@ -53,6 +53,7 @@ class CrawlerGiaTriThongSoKyThuat
         $xpath = new \DOMXPath($html);
 
         $ruleParse = $this->getRules($rule);
+//        $ruleParse = $ruleParse . '/text()';
         $nodelist = $xpath->query($ruleParse);
         if($nodelist->length > 0){
             for($i=0;$i<$nodelist->length;$i++){

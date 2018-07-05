@@ -24,7 +24,8 @@ class CrawlerMeta
                 $metas = $html->getElementsByTagName('meta');
 
                 if ($metas->length > 0) {
-                    for ($i = 0; $i < $metas->length; $i++) {
+                    for ($i = 0;
+                         $i < $metas->length; $i++) {
                         $meta = $metas->item($i);
                         if ($meta->getAttribute('name') == 'description') {
                             $description = $meta->getAttribute('content');
