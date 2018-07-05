@@ -22,8 +22,8 @@ class Selenium
         $this->executable = __DIR__ . '/js/index.js';
         $this->executableServer = __DIR__ . '/js/server_index.js';
         $this->executableServerRequest = __DIR__ . '/js/server_request.js';
-        ini_set('max_execution_time', 300);
-        set_time_limit(300);
+        ini_set('max_execution_time', 1300);
+        set_time_limit(1300);
     }
 
     /**

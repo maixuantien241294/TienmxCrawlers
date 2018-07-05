@@ -52,8 +52,35 @@ class CrawlerMeta
                             $image = $meta->getAttribute('content');
                             $linkWebsite = $this->getUrl($linkWebsite);
                             if (!empty($image)) {
-                                $image = $this->__check_url($image, $domain, $linkWebsite);
+                                if ($domain == 'phucanh.vn') {
+                                    $expl = explode('/media', $image);
+                                    if (!empty($expl)) {
+                                        if (isset($expl[1])) {
+                                            $image = 'https://www.phucanh.vn/media' . $expl[1];
+                                        }else{
+                                             $image = "";
+                                        }
+                                    }
+                                }
+                                if(!empty($image)){
+                                    $image = $this->__check_url($image, $domain, $linkWebsite);
+                                }
+                                
+                                // $checkImage = $this->is_image($image);
+                                // if ($checkImage == false) {
+                                //     $image = "";
+                                // }
                             }
+                            
+                            // if (!empty($image)) {
+                            //     if ($domain == 'phucanh.vn') {
+                            //         $expl = explode('/media', $image);
+                            //         if (!empty($expl)) {
+                            //             $image = 'https://www.phucanh.vn/media' . $expl[1];
+                            //         }
+                            //     }
+                            //     $image = $this->__check_url($image, $domain, $linkWebsite);
+                            // }
                             array_push($listMeta, [
                                 'key' => 'image_seo',
                                 'name' => 'image seo',

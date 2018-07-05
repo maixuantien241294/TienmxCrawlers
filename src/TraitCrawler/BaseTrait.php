@@ -24,7 +24,20 @@ trait BaseTrait
         }
         return $ruleParse;
     }
-
+    public function is_image($path)    {
+        if(!empty($path)){
+            $a = getimagesize($path);
+            if(isset( $a[2])){
+                $image_type = $a[2];            
+                if(in_array($image_type , array(IMAGETYPE_GIF , IMAGETYPE_JPEG ,IMAGETYPE_PNG , IMAGETYPE_BMP)))
+                {
+                    return true;            
+                }        
+            }
+        }
+                
+        return false;    
+    }
     public function getRuleHtml($rule)
     {
         $listRule = [];
