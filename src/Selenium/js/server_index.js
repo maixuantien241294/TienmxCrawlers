@@ -24,7 +24,7 @@ var link = newArray.link
 var a = (async function example() {
     let driver = await new Builder().forBrowser('firefox')
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
-        // .setFirefoxOptions(new firefox.Options().headless())
+        .setFirefoxOptions(new firefox.Options().headless())
         .build();
     try {
         await driver.get('' + link + '');
@@ -47,7 +47,7 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(2000);
+        await driver.sleep(5000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file.php', profile);

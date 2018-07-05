@@ -20,6 +20,7 @@ class GetCrawlerType
     public $src = 'src';
     public $misdn = 'phone_number';
     public $thong_so_ky_thuat = 'thong_so_ky_thuat';
+    public $thong_tin_shop  = 'thong_tin_shop';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
     public $crawlerPhantomjs = 4;
@@ -125,6 +126,15 @@ class GetCrawlerType
                         $cThongSoKyThuat = new CrawlerThongSoKyThuat();
 
                         $htmlString = $cThongSoKyThuat->executeThongSo($contentHtml, $val);
+
+                        break;
+                    case $this->thong_tin_shop:
+                        $query = $val['value'];
+                        $htmlString = "";
+                        $cThongTinShop = new CrawlerThongTinShop();
+                        if(!empty($query)){
+                            $htmlString = $cThongTinShop->executeInfoShop($contentHtml, $query, $linkWebsite, $domain);
+                        }
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;
