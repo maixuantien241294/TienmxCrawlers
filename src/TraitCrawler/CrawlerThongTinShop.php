@@ -51,9 +51,29 @@ class CrawlerThongTinShop
                 if (!empty($href)) {
                     $href = $this->__check_url($href, $domain, $linkWebsite);
                 }
+
+                $nameShop = "";
+                if ($domain == 'shopee.vn') {
+
+                    if (!empty($item->children(0)->children)) {
+                        if (isset($item->children(0)->children[0])) {
+                            $nameShop = trim($item->children(0)->children[0]->text());
+                        }
+                    }
+                }elseif ($domain == 'lotte.vn') {
+                    $elementName = $dom->find('div[class=product-right-content] div[class=inner-content] ul li[class=sell-by] p a strong[class=seller-name]');
+                    if (count($elementName) > 0) {
+                        foreach ($elementName as $itemName) {
+                            if (!empty(trim($itemName->text()))) {
+                                $nameShop = trim($itemName->text());
+                            }
+                        }
+                    }
+                }
+
                 $dataParser = [
                     'href' => $href,
-                    'text' => trim($item->text()),
+                    'text' => !empty($nameShop) ? $nameShop : trim($item->text()),
                 ];
                 array_push($listShop, $dataParser);
             }

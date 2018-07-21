@@ -47,7 +47,7 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(1000);
+        await driver.sleep(7000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             console.log(profile);
@@ -58,13 +58,14 @@ var a = (async function example() {
         // await driver.close();
         // await driver.quit();
     } catch (err) {
-        // await driver.close();
         await driver.quit();
+        await driver.close();
         process.exit(1);
     }
     finally {
-        // await driver.close();
         await driver.quit();
+        await driver.close();
+        
         process.exit(0);
     }
 })();
