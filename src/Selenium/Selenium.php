@@ -41,21 +41,21 @@ class Selenium
         $param = $this->getParams($config);
         $this->config = $this->merge($this->config, $config);
         if ($server == 1) {
-            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE','/var/www/crawler.muazi.vn/storage/app/');
+            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE', '/var/www/crawler.muazi.vn/storage/app/');
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableServer) . ' ' . $param;
         } else {
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
-        
+
         //print_r($fullCommand);die;
         exec($fullCommand, $output, $returnVal);
         $content = "";
-        if($server == 1){
+        if ($server == 1) {
             if ($returnVal == 0) {
-                if (\Storage::exists('download_file.php')) {
-                    $content = \Storage::get('download_file.php');
+                if (\Storage::exists('download_file_' . $config['port'] . '.php')) {
+                    $content = \Storage::get('download_file_' . $config['port'] . '.php');
                     /**
                      * remove file
                      */
@@ -66,13 +66,12 @@ class Selenium
                 'ouput' => $content,
                 'returnVal' => $returnVal
             ];
-        }else{
+        } else {
             $result = [
                 'ouput' => $output,
                 'returnVal' => $returnVal
             ];
         }
-
 
 
         return $result;
@@ -82,7 +81,7 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if (in_array($key, ['dom_click', 'link'])) {
+            if (in_array($key, ['dom_click', 'link', 'port'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";

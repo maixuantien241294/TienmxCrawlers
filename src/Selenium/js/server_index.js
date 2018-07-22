@@ -4,7 +4,8 @@ var fs = require('fs');
 var newArray = {
     link: [],
     dom_click: [],
-    path_folder: []
+    path_folder: [],
+    port:[]
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
@@ -23,7 +24,7 @@ var content = '';
 var link = newArray.link
 var a = (async function example() {
     let driver = await new Builder().forBrowser('firefox')
-        .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:4444/wd/hub')
+        .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:'+newArray['port'][0]+'/wd/hub')
         .setFirefoxOptions(new firefox.Options().headless())
         .build();
     try {
@@ -47,10 +48,10 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(5000);
+        await driver.sleep(10000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
-            fs.writeFileSync(path + 'download_file.php', profile);
+            fs.writeFileSync(path + 'download_file_'+newArray['port'][0]+'.php', profile);
         }, function (err) {
             console.log('Not get content');
             process.exit(0);
@@ -58,12 +59,12 @@ var a = (async function example() {
         // await driver.close();
         // await driver.quit();
     } catch (err) {
-        // await driver.close();
+        await driver.close();
         await driver.quit();
         process.exit(1);
     }
     finally {
-        // await driver.close();
+        await driver.close();
         await driver.quit();
         process.exit(0);
     }
