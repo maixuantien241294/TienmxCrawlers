@@ -40,6 +40,7 @@ class CrawlerThongSoKyThuat
                             $giaTriThongSo = $cGiaTriThongSo->crawler($newString, $ruleGiaTriThongSo);
                             $cTenThongSo = new CrawlerTenThongSo();
                             $tenThongSo = $cTenThongSo->crawler($newString, $ruleTenThongSo);
+
                             if (!empty($tenThongSo) && !empty($giaTriThongSo)) {
                                 for ($i = 0; $i < count($tenThongSo); $i++) {
                                     $data = [

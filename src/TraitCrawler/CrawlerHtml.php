@@ -52,6 +52,10 @@ class CrawlerHtml
                 }
 
             }
+            if(!empty($htmlString)){
+                $htmlString = preg_replace("/<a\s(.+?)>(.+?)<\/a>/is", "<b>$2</b>", $htmlString);
+            }
+
         } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
@@ -166,7 +170,6 @@ class CrawlerHtml
                 @$domDocument->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $htmlStringFirst);
                 $xpathEnd = new \DOMXPath($domDocument);
                 $listImg = $xpathEnd->query('//img');
-
                 if (intval($listImg->length) > 0) {
                     foreach ($listImg as $key => $item) {
                         for ($j = 0; $j < count($tagsSrc); $j++) {

@@ -184,6 +184,7 @@ class CrawlerCateTrait
         /**
          * @desc Check is dom or xpath
          */
+
         $ruleHtml = $this->getRuleHtml($this->rules);
 
         $tempAll = [];
@@ -270,7 +271,7 @@ class CrawlerCateTrait
         @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
         $crawler = new \DOMXPath($html);
         $nodelist = $crawler->query($rules);
-
+        
         if ($nodelist->length > 0) {
             foreach ($nodelist as $item) {
                 $href = trim($item->getAttribute('href'));

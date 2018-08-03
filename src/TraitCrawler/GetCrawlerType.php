@@ -20,7 +20,7 @@ class GetCrawlerType
     public $src = 'src';
     public $misdn = 'phone_number';
     public $thong_so_ky_thuat = 'thong_so_ky_thuat';
-    public $thong_tin_shop  = 'thong_tin_shop';
+    public $thong_tin_shop = 'thong_tin_shop';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
     public $crawlerPhantomjs = 4;
@@ -39,7 +39,7 @@ class GetCrawlerType
     }
 
 
-    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $showArray = 0)
+    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $replaceImg = [], $showArray = 0)
     {
         $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
@@ -97,7 +97,7 @@ class GetCrawlerType
                     case $this->src:
                         $cSrc = new CrawlerSrc();
                         if (!empty($val['value'])) {
-                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg, $download);
                         } else {
                             $htmlString = "";
                         }
@@ -132,7 +132,7 @@ class GetCrawlerType
                         $query = $val['value'];
                         $htmlString = "";
                         $cThongTinShop = new CrawlerThongTinShop();
-                        if(!empty($query)){
+                        if (!empty($query)) {
                             $htmlString = $cThongTinShop->executeInfoShop($contentHtml, $query, $linkWebsite, $domain);
                         }
                         break;

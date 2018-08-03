@@ -25,7 +25,7 @@ class CrawlerSrc
      * @param $valueRemove
      * @return array
      */
-    public function executeSrc($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $download)
+    public function executeSrc($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg = [], $download)
     {
 
         $htmlString = [];
@@ -46,6 +46,57 @@ class CrawlerSrc
                         }
                     }
 
+                }
+            }
+            if ($domain = 'dienmayxanh.com') {
+                $listKichThuoc = ['-180x120', '-300x300', '-480x480'];
+
+                $imgReplace = [];
+                foreach ($htmlString as $item) {
+                    $expImg = [];
+                    for ($i = 0; $i < count($listKichThuoc); $i++) {
+                        $exp = explode($listKichThuoc[$i], $item);
+                        if (count($exp) > 1) {
+                            $expImg = $exp;
+                        }
+                    }
+                    $newImg = "";
+                    if (count($expImg) > 1) {
+                        $enDot = explode('.', $expImg[1]);
+                        if (count($enDot) > 0) {
+                            $newImg = $expImg[0] . '.' . $enDot[1];
+                        } else {
+                            $newImg = $expImg[0] . '.jpg';
+                        }
+                    }
+                    if (!empty($newImg)) {
+                        array_push($imgReplace, $newImg);
+                    }
+                }
+                if(!empty($imgReplace)){
+                    $htmlString = $imgReplace;
+                }
+            }
+            if (!empty($replaceImg) && !empty($htmlString)) {
+                $listSearch = [];
+                $listReplcae = [];
+                for ($i = 0; $i < count($replaceImg); $i++) {
+                    if (isset($replaceImg[$i]['key_search']) && !empty($replaceImg[$i]['key_search'])) {
+                        array_push($listSearch, $replaceImg[$i]['key_search']);
+                        array_push($listReplcae, $replaceImg[$i]['key_replace']);
+                    }
+
+                }
+                $listNewImg = [];
+                foreach ($htmlString as $item) {
+
+                    $newImg = str_replace($listSearch, $listReplcae, $item);
+                    if (!empty($newImg)) {
+                        array_push($listNewImg, $newImg);
+                    }
+                }
+                if (!empty($listNewImg)) {
+                    $htmlString = $listNewImg;
                 }
             }
         } catch (\Exception $exception) {
