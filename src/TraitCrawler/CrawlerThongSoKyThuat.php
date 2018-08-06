@@ -14,7 +14,7 @@ class CrawlerThongSoKyThuat
 {
     use BaseTrait;
 
-    public function executeThongSo($contentHtml, $queryAll)
+    public function executeThongSo($contentHtml, $domain, $queryAll)
     {
         try {
             $temp = [];
@@ -37,9 +37,9 @@ class CrawlerThongSoKyThuat
                          */
                         if (!empty($newString)) {
                             $cGiaTriThongSo = new CrawlerGiaTriThongSoKyThuat();
-                            $giaTriThongSo = $cGiaTriThongSo->crawler($newString, $ruleGiaTriThongSo);
+                            $giaTriThongSo = $cGiaTriThongSo->crawler($newString,$domain, $ruleGiaTriThongSo);
                             $cTenThongSo = new CrawlerTenThongSo();
-                            $tenThongSo = $cTenThongSo->crawler($newString, $ruleTenThongSo);
+                            $tenThongSo = $cTenThongSo->crawler($newString,$domain, $ruleTenThongSo);
 
                             if (!empty($tenThongSo) && !empty($giaTriThongSo)) {
                                 for ($i = 0; $i < count($tenThongSo); $i++) {
@@ -81,7 +81,7 @@ class CrawlerThongSoKyThuat
 
     public function parseXpth($contentHtml, $rule)
     {
-        $htmlString ="";
+        $htmlString = "";
         $html = new \DOMDocument();
         @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
         $xpath = new \DOMXPath($html);

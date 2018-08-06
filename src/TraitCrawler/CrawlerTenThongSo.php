@@ -14,7 +14,7 @@ class CrawlerTenThongSo
 {
     use BaseTrait;
 
-    public function crawler($contentHtml, $queryAll)
+    public function crawler($contentHtml, $domain, $queryAll)
     {
         $newString = [];
         $ruleHtml = $this->getRuleHtml($queryAll);
@@ -22,16 +22,16 @@ class CrawlerTenThongSo
             for ($i = 0; $i < count($ruleHtml); $i++) {
                 $check = $this->checkXpath($ruleHtml[$i]);
                 if ($check === false) {
-                    $newString = $this->parseDom($contentHtml, $ruleHtml[$i]);
+                    $newString = $this->parseDom($contentHtml,$domain, $ruleHtml[$i]);
                 } else {
-                    $newString = $this->parseXpath($contentHtml, $ruleHtml[$i]);
+                    $newString = $this->parseXpath($contentHtml,$domain, $ruleHtml[$i]);
                 }
             }
         }
         return $newString;
     }
 
-    public function parseDom($contentHtml, $rule)
+    public function parseDom($contentHtml, $domain, $rule)
     {
         $temp = [];
         $dom = HtmlDomParser::str_get_html($contentHtml);
@@ -39,14 +39,18 @@ class CrawlerTenThongSo
         if (count($element) > 0) {
             foreach ($element as $item) {
                 if (!empty($item->text())) {
-                    array_push($temp, $item->text());
+                    $text = $item->text();
+                    if ($domain == 'hc.com.vn') {
+                        $text = utf8_decode($item->text());
+                    }
+                    array_push($temp, trim($text));
                 }
             }
         }
         return $temp;
     }
 
-    public function parseXpath($contentHtml, $rule)
+    public function parseXpath($contentHtml, $domain, $rule)
     {
         $temp = [];
         $html = new \DOMDocument();
@@ -56,12 +60,15 @@ class CrawlerTenThongSo
         $ruleParse = $this->getRules($rule);
 //        $ruleParse = $ruleParse . '/text()';
         $nodelist = $xpath->query($ruleParse);
-        if($nodelist->length > 0){
-            for($i=0;$i<$nodelist->length;$i++){
-               $value = $nodelist->item($i)->nodeValue;
-               if(!empty($value)){
-                   array_push($temp,$value);
-               }
+        if ($nodelist->length > 0) {
+            for ($i = 0; $i < $nodelist->length; $i++) {
+                $value = $nodelist->item($i)->nodeValue;
+                if ($domain == 'hc.com.vn') {
+                    $value = utf8_decode($value);
+                }
+                if (!empty($value)) {
+                    array_push($temp, trim($value));
+                }
             }
         }
         return $temp;

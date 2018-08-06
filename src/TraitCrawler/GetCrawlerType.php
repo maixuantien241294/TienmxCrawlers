@@ -125,7 +125,7 @@ class GetCrawlerType
                     case $this->thong_so_ky_thuat:
                         $cThongSoKyThuat = new CrawlerThongSoKyThuat();
 
-                        $htmlString = $cThongSoKyThuat->executeThongSo($contentHtml, $val);
+                        $htmlString = $cThongSoKyThuat->executeThongSo($contentHtml, $domain, $val);
 
                         break;
                     case $this->thong_tin_shop:
