@@ -223,8 +223,10 @@ class CrawlerSrc
                     if($domain != 'nguyenkim.com'){
                         $image = $this->__check_url($image, $domain, $linkWebsite);
                     }
+                    if(!empty($image)){
+                        array_push($htmlString, urlencode(trim($image)));
+                    }
 
-                    array_push($htmlString, urlencode(trim($image)));
                 }
                 break;
             }
