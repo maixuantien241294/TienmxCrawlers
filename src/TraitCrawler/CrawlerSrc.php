@@ -70,7 +70,7 @@ class CrawlerSrc
                         }
                     }
                     if (!empty($newImg)) {
-                        array_push($imgReplace, $newImg);
+                        array_push($imgReplace, urlencode($newImg));
                     }
                 }
                 if (!empty($imgReplace)) {
@@ -80,20 +80,21 @@ class CrawlerSrc
             if (!empty($replaceImg) && !empty($htmlString)) {
                 $listSearch = [];
                 $listReplcae = [];
+
                 for ($i = 0; $i < count($replaceImg); $i++) {
                     if (isset($replaceImg[$i]['key_search']) && !empty($replaceImg[$i]['key_search'])) {
-                        array_push($listSearch, $replaceImg[$i]['key_search']);
-                        array_push($listReplcae, $replaceImg[$i]['key_replace']);
+                        array_push($listSearch, trim($replaceImg[$i]['key_search']));
+                        array_push($listReplcae, trim($replaceImg[$i]['key_replace']));
                     }
 
                 }
                 $listNewImg = [];
 
                 foreach ($htmlString as $item) {
-
                     $newImg = str_replace($listSearch, $listReplcae, $item);
+
                     if (!empty($newImg)) {
-                        array_push($listNewImg, $newImg);
+                        array_push($listNewImg, urlencode($newImg));
                     }
                 }
                 if (!empty($listNewImg)) {
@@ -157,10 +158,10 @@ class CrawlerSrc
                         $image = $item->getAttribute($tagsSrc[$i]);
                     }
                     if (!empty($image)) {
-                        if($domain != 'nguyenkim.com'){
+                        if ($domain != 'nguyenkim.com') {
                             $image = $this->__check_url($image, $domain, $linkWebsite);
                         }
-                        array_push($htmlString, urlencode($image));
+                        array_push($htmlString, trim($image));
                     }
                 }
             }
@@ -198,7 +199,7 @@ class CrawlerSrc
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
-                   
+
                     if ($item == 'style') {
 
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
@@ -220,11 +221,11 @@ class CrawlerSrc
                             }
                         }
                     }
-                    if($domain != 'nguyenkim.com'){
+                    if ($domain != 'nguyenkim.com') {
                         $image = $this->__check_url($image, $domain, $linkWebsite);
                     }
-                    if(!empty($image)){
-                        array_push($htmlString, urlencode(trim($image)));
+                    if (!empty($image)) {
+                        array_push($htmlString,trim($image));
                     }
 
                 }

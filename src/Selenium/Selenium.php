@@ -35,6 +35,7 @@ class Selenium
      */
     public function html($config = [], $server = 1)
     {
+
         if (!isset($config['link'])) {
             throw new \Exception('URL or HTML in configuration required', 400);
         }
@@ -49,7 +50,6 @@ class Selenium
                 . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
 
-        //print_r($fullCommand);die;
         exec($fullCommand, $output, $returnVal);
         $content = "";
         if ($server == 1) {
@@ -81,7 +81,7 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if (in_array($key, ['dom_click', 'link', 'port'])) {
+            if (in_array($key, ['dom_click', 'link', 'port','domain'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";

@@ -5,7 +5,8 @@ var newArray = {
     link: [],
     dom_click: [],
     path_folder: [],
-    port:[]
+    port:[],
+    domain:[]
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
@@ -48,7 +49,12 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(10000);
+        if(newArray.domain[0] == 'sendo.vn'){
+            await driver.sleep(15000);
+        }else{
+            await driver.sleep(10000);
+        }
+
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             console.log(profile);
