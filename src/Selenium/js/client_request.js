@@ -10,7 +10,6 @@ var newArray = {
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
-
     if (argRule[0] && argRule[1]) {
         if (typeof newArray[argRule[0]] != "undefined" && newArray[argRule[0]] != null) {
             newArray[argRule[0]].push(argRule[1]);
@@ -28,6 +27,11 @@ var a = (async function example() {
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:'+newArray['port'][0]+'/wd/hub')
         .setFirefoxOptions(new firefox.Options().headless())
         .build();
+    if(typeof (newArray['domain'][0]) !='undefined' && (newArray['domain'][0] == 'sendo.vn')){
+        driver = await new Builder().forBrowser('firefox')
+            .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:'+newArray['port'][0]+'/wd/hub')
+            .build();
+    }
     try {
         await driver.get('' + link + '');
         /**
@@ -49,13 +53,16 @@ var a = (async function example() {
                 }
             }
         }
-        if(newArray.domain[0] == 'sendo.vn'){
-            await driver.sleep(15000);
+        // let element = await driver.findElement(By.tagName('html'));
+        await driver.executeScript("window.scrollBy(0,2000)")
+        if(typeof (newArray['domain'][0]) !='undefined' && (newArray['domain'][0] == 'sendo.vn')){
+            await driver.sleep(20000);
         }else{
             await driver.sleep(10000);
         }
 
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
+
             var path = newArray['path_folder'][0];
             console.log(profile);
         }, function (err) {
