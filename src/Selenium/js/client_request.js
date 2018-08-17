@@ -6,7 +6,8 @@ var newArray = {
     dom_click: [],
     path_folder: [],
     port:[],
-    domain:[]
+    domain:[],
+    web_num_wait:[]
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
@@ -55,12 +56,11 @@ var a = (async function example() {
         }
         // let element = await driver.findElement(By.tagName('html'));
         await driver.executeScript("window.scrollBy(0,2000)")
-        if(typeof (newArray['domain'][0]) !='undefined' && (newArray['domain'][0] == 'sendo.vn')){
-            await driver.sleep(20000);
+        if(typeof (newArray['web_num_wait'][0]) !='undefined'){
+            await driver.sleep(newArray['web_num_wait'][0]);
         }else{
-            await driver.sleep(10000);
+            await driver.sleep(5);
         }
-
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
 
             var path = newArray['path_folder'][0];

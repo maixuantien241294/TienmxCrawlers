@@ -19,6 +19,7 @@ trait BaseTrait
     {
         $ruleParse = $rule;
         $ruleData = explode(',', $rule);
+
         if (count($ruleData) > 0) {
             $ruleParse = $ruleData[count($ruleData) - 1];
         }
@@ -282,5 +283,43 @@ trait BaseTrait
 
         }
         return $href;
+    }
+
+    public function callApiGet($headers = array(), $url = "")
+    {
+        try {
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://www.sendo.vn/m/wap_v2/full/san-pham/ao-da-nam-xin-4510730?source_block_id=listing_products&source_info=desktop2_60_1534409830115_437985205_0_default_20_1_2&source_page_id=cate3_default_listing_desc",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_POSTFIELDS => "id=50132",
+                CURLOPT_HTTPHEADER => array(
+//                    "If-none-match-: 55b03-987390ecdcf5cfd8f45c6dcbc4599dda"
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            dd($response);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($err) {
+                echo "cURL Error #:" . $err;
+            } else {
+                echo $response;
+            }
+            curl_close($curl);
+            return $response;
+        } catch (\Exception $ex) {
+            return $ex->getMessage();
+        }
     }
 }

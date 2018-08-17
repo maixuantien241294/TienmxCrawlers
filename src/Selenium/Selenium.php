@@ -49,8 +49,8 @@ class Selenium
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
-
         exec($fullCommand, $output, $returnVal);
+
         $content = "";
         if ($server == 1) {
             if ($returnVal == 0) {
@@ -73,7 +73,6 @@ class Selenium
             ];
         }
 
-
         return $result;
     }
 
@@ -81,7 +80,7 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if (in_array($key, ['dom_click', 'link', 'port','domain'])) {
+            if (in_array($key, ['dom_click', 'link', 'port','domain','web_num_wait'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";

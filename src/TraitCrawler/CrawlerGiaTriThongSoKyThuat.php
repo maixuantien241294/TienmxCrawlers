@@ -35,25 +35,31 @@ class CrawlerGiaTriThongSoKyThuat
         ini_set('default_charset', 'utf-8');
         $temp = [];
         $dom = HtmlDomParser::str_get_html($contentHtml);
-
         $element = $dom->find($rule);
         if (count($element) > 0) {
             foreach ($element as $item) {
                 if(!empty($item->text())){
                     $text = $item->text();
-                    if ($domain == 'hc.com.vn') {
-                        $text = utf8_decode($item->text());
-                    }
-                    array_push($temp,trim($text));
+//                    if ($domain == 'hc.com.vn') {
+//                        $text = utf8_decode($item->text());
+//
+//                    }
+                    array_push($temp,$this->removeQuote(trim($text)));
                 }
             }
         }
         return $temp;
     }
+    protected function removeQuote($string)
+    {
+        $string = trim($string);
+        $string = str_replace("\'", "'", $string);
+        $string = str_replace('"', "", $string);
+
+        return $string;
+    }
     public function parseXpath($contentHtml,$domain, $rule)
     {
-//        $contentHtml = mb_convert_encoding($contentHtml, 'HTML-ENTITIES', "UTF-8");
-        ini_set('default_charset', 'utf-8');
         $temp = [];
         $html = new \DOMDocument();
         @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
@@ -63,16 +69,15 @@ class CrawlerGiaTriThongSoKyThuat
 
 //        $ruleParse = $ruleParse . '/text()';
         $nodelist = $xpath->query($ruleParse);
-        
+
         if($nodelist->length > 0){
             for($i=0;$i<$nodelist->length;$i++){
-//                dd($nodelist->item(2));
                 $value = $nodelist->item($i)->nodeValue;
-                if ($domain == 'hc.com.vn') {
-                    $value = utf8_decode($value);
-                }
+//                if ($domain == 'hc.com.vn') {
+//                    $value = utf8_decode($value);
+//                }
                 if(!empty($value)){
-                    array_push($temp,trim($value));
+                    array_push($temp,$this->removeQuote(trim($value)));
                 }
             }
         }

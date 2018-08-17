@@ -40,7 +40,6 @@ trait CrawlerTypeTrait
     protected $listHeader = [
         'Connection: keep-alive',
         'Keep-Alive: 300',
-        "User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0.1",
         "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7",
         "Accept-Language: vi,vi;q=0.5"
     ];
@@ -180,6 +179,7 @@ trait CrawlerTypeTrait
 
     protected function __getContent($url, $data = array())
     {
+
         $userAgents = $this->listUserAgents;
         $head = $this->listHeader;
 
@@ -198,12 +198,12 @@ trait CrawlerTypeTrait
          */
         if (!empty($newUserAgents)) {
             $newExplodeUserAgents = explode('|', $newUserAgents);
-            $userAgents = array_merge($userAgents, $newExplodeUserAgents);
+
+            $userAgents = $newExplodeUserAgents;
         }
         $userAgents = array_unique($userAgents);
 
         $random = rand(0, count($userAgents) - 1);
-
         $options = array(
 
             CURLOPT_CUSTOMREQUEST => "GET",        //set request type post or get

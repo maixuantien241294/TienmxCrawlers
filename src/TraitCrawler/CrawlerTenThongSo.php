@@ -40,9 +40,9 @@ class CrawlerTenThongSo
             foreach ($element as $item) {
                 if (!empty($item->text())) {
                     $text = $item->text();
-                    if ($domain == 'hc.com.vn') {
-                        $text = utf8_decode($item->text());
-                    }
+//                    if ($domain == 'hc.com.vn') {
+//                        $text = utf8_decode($item->text());
+//                    }
                     array_push($temp, trim($text));
                 }
             }
@@ -63,9 +63,9 @@ class CrawlerTenThongSo
         if ($nodelist->length > 0) {
             for ($i = 0; $i < $nodelist->length; $i++) {
                 $value = $nodelist->item($i)->nodeValue;
-                if ($domain == 'hc.com.vn') {
-                    $value = utf8_decode($value);
-                }
+//                if ($domain == 'hc.com.vn') {
+//                    $value = utf8_decode($value);
+//                }
                 if (!empty($value)) {
                     array_push($temp, trim($value));
                 }

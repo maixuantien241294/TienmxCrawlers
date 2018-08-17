@@ -25,29 +25,35 @@ class CrawlerSrc
      * @param $valueRemove
      * @return array
      */
-    public function executeSrc($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg = [], $download)
+    public function executeSrc($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg = [], $webRuleImgSpec, $download)
     {
-
         $htmlString = [];
-        try {
-            $ruleHtml = $this->getRuleHtml($rule);
-            \Log::info(json_encode($ruleHtml), ['Luat_cate' => 'Luat_cate']);
-            if (!empty($ruleHtml)) {
-                for ($i = 0; $i < count($ruleHtml); $i++) {
-                    $check = $this->checkXpath($ruleHtml[$i]);
-                    if ($check === false) {
-                        $listImage = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
-                    } else {
-                        $listImage = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
-                    }
-                    if (!empty($listImage)) {
-                        foreach ($listImage as $item) {
-                            array_push($htmlString, $item);
-                        }
-                    }
 
+        try {
+            if (!empty($webRuleImgSpec)) {
+                $htmlString = $this->parseRuleImgSpec($contentHtml, $webRuleImgSpec, $linkWebsite, $domain, $valueRemove);
+            } else {
+                $ruleHtml = $this->getRuleHtml($rule);
+                \Log::info(json_encode($ruleHtml), ['Luat_cate' => 'Luat_cate']);
+                if (!empty($ruleHtml)) {
+                    for ($i = 0; $i < count($ruleHtml); $i++) {
+                        $check = $this->checkXpath($ruleHtml[$i]);
+                        if ($check === false) {
+                            $listImage = $this->parseDom($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                        } else {
+                            $listImage = $this->parseXpath($contentHtml, $ruleHtml[$i], $tagsSrc, $linkWebsite, $domain, $valueRemove, $download);
+                        }
+                        if (!empty($listImage)) {
+                            foreach ($listImage as $item) {
+                                array_push($htmlString, $item);
+                            }
+                        }
+
+                    }
                 }
             }
+
+            $htmlString = array_unique($htmlString);
             if ($domain = 'dienmayxanh.com') {
                 $listKichThuoc = ['-180x120', '-300x300', '-480x480'];
 
@@ -70,7 +76,7 @@ class CrawlerSrc
                         }
                     }
                     if (!empty($newImg)) {
-                        array_push($imgReplace, urlencode($newImg));
+                        array_push($imgReplace, $newImg);
                     }
                 }
                 if (!empty($imgReplace)) {
@@ -89,18 +95,24 @@ class CrawlerSrc
 
                 }
                 $listNewImg = [];
-
                 foreach ($htmlString as $item) {
                     $newImg = str_replace($listSearch, $listReplcae, $item);
-
                     if (!empty($newImg)) {
-                        array_push($listNewImg, urlencode($newImg));
+                        array_push($listNewImg, $newImg);
                     }
                 }
                 if (!empty($listNewImg)) {
                     $htmlString = $listNewImg;
                 }
             }
+            $htmlString = array_unique($htmlString);
+            $newHtmlString = [];
+            if (!empty($htmlString)) {
+                foreach ($htmlString as $img) {
+                    array_push($newHtmlString, urldecode($img));
+                }
+            }
+            $htmlString = !empty($newHtmlString) ? $newHtmlString : $htmlString;
         } catch (\Exception $exception) {
             dd($exception->getMessage());
         }
@@ -110,7 +122,7 @@ class CrawlerSrc
 
     protected function parseDom($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $download)
     {
-        header('Content-Type: image/jpeg');
+//        header('Content-Type: image/jpeg');
         $htmlString = [];
         $dom = HtmlDomParser::str_get_html($contentHtml);
         $element = $dom->find($rule);
@@ -199,7 +211,6 @@ class CrawlerSrc
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $node) {
                     $image = $nodelist->item($key)->value;
-
                     if ($item == 'style') {
 
                         $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
@@ -221,11 +232,20 @@ class CrawlerSrc
                             }
                         }
                     }
+                    if($domain =='shopee.vn'){
+                        $regex = '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#';
+                        preg_match($regex, $image, $matches);
+                        if(isset($matches) && !empty($matches)){
+                            if(isset($matches[0])){
+                                $image = $matches[0];
+                            }
+                        }
+                    }
                     if ($domain != 'nguyenkim.com') {
                         $image = $this->__check_url($image, $domain, $linkWebsite);
                     }
                     if (!empty($image)) {
-                        array_push($htmlString,trim($image));
+                        array_push($htmlString, trim($image));
                     }
 
                 }
@@ -233,5 +253,39 @@ class CrawlerSrc
             }
         }
         return $htmlString;
+    }
+
+    protected function parseRuleImgSpec($contentHtml, $rule, $linkWebsite, $domain, $valueRemove)
+    {
+
+        $dataImg = [];
+        $html = new \DOMDocument('1.0', 'UTF-8');
+        @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $contentHtml);
+        $xpath = new \DOMXPath($html);
+        $rule = $rule . '/text()';
+        $node = $xpath->query($rule);
+        $arrayExt = ["gif", "jpg", "jpeg", "png", "tiff", "tif"];
+        if ($node->length > 0) {
+            $dataStr = trim($node->item(0)->nodeValue);
+            $regex = '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#';
+            preg_match_all($regex, $dataStr, $matches);
+
+            if (isset($matches) && !empty($matches)) {
+                foreach ($matches as $item) {
+                    if (count($item) > 1) {
+                        for ($i = 0; $i < count($item); $i++) {
+                            $oldImg = $item[$i];
+                            $urlExt = pathinfo($oldImg, PATHINFO_EXTENSION);
+                            if (in_array($urlExt, $arrayExt)) {
+                                $oldImg = $this->__check_url($oldImg, $domain, $linkWebsite);
+                                array_push($dataImg, $oldImg);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $dataImg;
+
     }
 }

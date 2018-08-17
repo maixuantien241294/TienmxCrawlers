@@ -39,7 +39,7 @@ class GetCrawlerType
     }
 
 
-    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $replaceImg = [], $showArray = 0)
+    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $replaceImg = [], $webRuleImgSpec, $showArray = 0)
     {
         $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
@@ -97,7 +97,7 @@ class GetCrawlerType
                     case $this->src:
                         $cSrc = new CrawlerSrc();
                         if (!empty($val['value'])) {
-                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg, $download);
+                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg,$webRuleImgSpec, $download);
                         } else {
                             $htmlString = "";
                         }

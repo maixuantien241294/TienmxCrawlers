@@ -5,7 +5,9 @@ var newArray = {
     link: [],
     dom_click: [],
     path_folder: [],
-    port:[]
+    port:[],
+    domain:[],
+    web_num_wait:[]
 };
 process.argv.slice(2).map(function (arg, i) {
     argRule = arg.split('MqFPJ3HnAV');
@@ -48,10 +50,12 @@ var a = (async function example() {
                 }
             }
         }
-        await driver.sleep(10000);
+        await driver.executeScript("window.scrollBy(0,2000)")
+        await driver.sleep(20);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file_'+newArray['port'][0]+'.php', profile);
+            // console.log(profile);
         }, function (err) {
             console.log('Not get content');
             process.exit(0);
