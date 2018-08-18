@@ -32,7 +32,7 @@ class CrawlerInfoSendo
 //    public $apiShop =''
     public $header = [];
 
-    public function crawler($rules, $link, $domain, $linkWebsite, $cateId = 0, $download=2)
+    public function crawler($rules,$link, $domain, $linkWebsite, $cateId = 0, $download = 2)
     {
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         $meta = [];
@@ -63,6 +63,7 @@ class CrawlerInfoSendo
                                         $rules[$i]['content'] = [
                                             urlencode($result['media'][0]['image'])
                                         ];
+                                        break;
                                     }
                                 }
                                 if ($rules[$i]['key'] == 'pro_price') {
@@ -152,19 +153,19 @@ class CrawlerInfoSendo
                             /**
                              * @them meta
                              */
-                            array_push($meta,[
+                            array_push($meta, [
                                 'key' => 'description',
                                 'name' => 'description',
                                 'type' => 'text',
                                 'content' => $resultMeta['description']
                             ]);
-                            array_push($meta,[
+                            array_push($meta, [
                                 'key' => 'meta_title',
                                 'name' => 'meta_title',
                                 'type' => 'text',
                                 'content' => $resultMeta['page_title']
                             ]);
-                            array_push($meta,[
+                            array_push($meta, [
                                 'key' => 'image_seo',
                                 'name' => 'image_seo',
                                 'type' => 'src',
@@ -172,7 +173,7 @@ class CrawlerInfoSendo
                                     $resultMeta['og_image']
                                 ]
                             ]);
-                            array_push($meta,[
+                            array_push($meta, [
                                 'key' => 'keywords',
                                 'name' => 'keywords',
                                 'type' => 'text',
@@ -184,7 +185,7 @@ class CrawlerInfoSendo
             }
 
 
-            if(!empty($temp)){
+            if (!empty($temp)) {
                 if (!empty($meta)) {
                     if ($download == $this->isDownload) {
                         $tempMeta = [];
@@ -201,7 +202,7 @@ class CrawlerInfoSendo
                 $return['error'] = false;
             }
         } catch (\Exception $exception) {
-           $return['content'] = $exception->getMessage();
+            $return['content'] = $exception->getMessage();
         }
         return $return;
     }

@@ -33,7 +33,7 @@ class CrawlerInfoLotte
 //    public $apiShop =''
     public $header = [];
 
-    public function crawler($rules, $link, $domain, $linkWebsite, $cateId = 0, $download = 2)
+    public function crawler($rules, $idPro,  $link, $domain, $linkWebsite, $cateId = 0, $download = 2)
     {
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         $meta = [];
@@ -43,23 +43,27 @@ class CrawlerInfoLotte
             $exp = explode('product/', $link);
 
             $id = 0;
-            if (!empty($exp) && isset($exp[1])) {
-                $expId = explode('/', $exp[1]);
-                dd($expId);
-                if (!empty($expId)) {
-                    $id = isset($expId[0]) ? intval($expId[0]) : 0;
-                    $linkApi = $this->api . '?id=' . $id . '&isDetailPage=1';
-                }
-            } else {
-                $exp1 = explode('/', $link);
-                $expIdEnd = end($exp1);
-                $expDot = explode('.', $expIdEnd);
-                if (!empty($expDot) && isset($expDot[0])) {
-                    $id = isset($expDot[0]) ? intval($expDot[0]) : 0;
-                    $linkApi = $this->api . '?id=' . $id . '&isDetailPage=1';
-                }
+            if(intval($idPro) > 0){
+                $linkApi = $this->api . '?id=' . $idPro . '&isDetailPage=1';
+            }else{
+                if (!empty($exp) && isset($exp[1])) {
+                    $expId = explode('/', $exp[1]);
+                    if (!empty($expId)) {
+                        $id = isset($expId[0]) ? intval($expId[0]) : 0;
+                        $linkApi = $this->api . '?id=' . $id . '&isDetailPage=1';
+                    }
+                } else {
+                    $exp1 = explode('/', $link);
+                    $expIdEnd = end($exp1);
+                    $expDot = explode('.', $expIdEnd);
+                    if (!empty($expDot) && isset($expDot[0])) {
+                        $id = isset($expDot[0]) ? intval($expDot[0]) : 0;
+                        $linkApi = $this->api . '?id=' . $id . '&isDetailPage=1';
+                    }
 
+                }
             }
+            
             $res = $this->__getContent($linkApi);
             if ($res['http_code'] == 200) {
                 $result = json_decode($res['content'], true);
@@ -196,7 +200,7 @@ class CrawlerInfoLotte
                         'name' => 'image_seo',
                         'type' => 'src',
                         'content' => [
-                            urlencode($imageSeo)
+                            $imageSeo
                         ]
                     ]);
                     array_push($meta, [
