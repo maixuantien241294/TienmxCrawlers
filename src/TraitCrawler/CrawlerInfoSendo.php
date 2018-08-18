@@ -63,7 +63,6 @@ class CrawlerInfoSendo
                                         $rules[$i]['content'] = [
                                             urlencode($result['media'][0]['image'])
                                         ];
-                                        break;
                                     }
                                 }
                                 if ($rules[$i]['key'] == 'pro_price') {
