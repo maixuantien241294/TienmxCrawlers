@@ -32,7 +32,7 @@ class CrawlerInfoSendo
 //    public $apiShop =''
     public $header = [];
 
-    public function crawler($rules,$link, $domain, $linkWebsite, $cateId = 0, $download = 2)
+    public function crawler($rules, $link, $domain, $linkWebsite, $cateId = 0, $download = 2)
     {
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         $meta = [];
@@ -41,11 +41,23 @@ class CrawlerInfoSendo
             $expLink = explode($this->domain, $link);
             if (!empty($expLink)) {
                 $params = end($expLink);
+                /**
+                 * @kiểm tra export
+                 */
+                $checkParam = explode('san-pham', $params);
+                if (count($checkParam) > 1) {
+                    $params = end($checkParam);
+                }
+
                 $linkApi = $this->api . $params;
+
                 $linkApi = str_replace('.html', "", $linkApi);
+
                 $res = $this->__getContent($linkApi);
+
                 if ($res['http_code'] == 200) {
                     $data = json_decode($res['content'], true);
+
                     if ($data['status']['code'] == 200) {
                         $result = $data['result']['data'];
                         $resultMeta = $data['result']['meta_data'];
@@ -57,35 +69,46 @@ class CrawlerInfoSendo
                                         $result['name']
                                     ];
                                 }
+
                                 if ($rules[$i]['key'] == 'pro_picture') {
                                     $rules[$i]['content'] = [];
-                                    if (isset($result['media'][0]) && !empty($result['media'][0])) {
+                                    if (isset($result['media'][0]) && !empty($result['media'][0]) && isset($result['media'][0]['image'])) {
+                                        $rules[$i]['content'] = [
+                                            urlencode($result['media'][0]['image'])
+                                        ];
+                                    }else if (isset($result['media'][1]) && !empty($result['media'][1]) && isset($result['media'][1]['image'])){
                                         $rules[$i]['content'] = [
                                             urlencode($result['media'][0]['image'])
                                         ];
                                     }
+
                                 }
                                 if ($rules[$i]['key'] == 'pro_price') {
                                     $rules[$i]['content'] = [
                                         doubleval($result['price'])
                                     ];
+
                                 }
                                 if ($rules[$i]['key'] == 'pro_price_promotion') {
                                     $rules[$i]['content'] = [
                                         doubleval($result['final_price'])
                                     ];
+
                                 }
                                 if ($rules[$i]['key'] == 'pro_list_image') {
                                     $listImg = [];
                                     if (!empty($result['media'])) {
                                         foreach ($result['media'] as $media) {
-                                            array_push($listImg, urlencode($media['image']));
+                                            if(isset($media['image'])){
+                                                array_push($listImg, urlencode($media['image']));
+                                            }
                                         }
                                     }
                                     $rules[$i]['content'] = $listImg;
                                 }
                                 if ($rules[$i]['key'] == 'pro_description') {
                                     $rules[$i]['content'] = $result['description'];
+
                                 }
                                 if ($rules[$i]['key'] == 'pro_misdn_shop') {
                                     if (!empty($result['shop_info'])) {
@@ -94,6 +117,7 @@ class CrawlerInfoSendo
                                         ];
                                     }
                                 }
+
                                 if ($rules[$i]['key'] == 'pro_thong_so_ky_thuat') {
                                     $listThongSo = [];
                                     if (!empty($result['description'])) {
@@ -182,8 +206,6 @@ class CrawlerInfoSendo
                     }
                 }
             }
-
-
             if (!empty($temp)) {
                 if (!empty($meta)) {
                     if ($download == $this->isDownload) {
@@ -200,6 +222,7 @@ class CrawlerInfoSendo
                 $return['content'] = $temp;
                 $return['error'] = false;
             }
+
         } catch (\Exception $exception) {
             $return['content'] = $exception->getMessage();
         }
