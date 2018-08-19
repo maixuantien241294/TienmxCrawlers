@@ -77,8 +77,15 @@ class CrawlerInfoLotte
                         }
                         if ($rules[$i]['key'] == 'pro_picture') {
                             if (isset($result['media_gallery_entries'][0]) && !empty($result['media_gallery_entries'][0])) {
+                                $testElement = substr($result['media_gallery_entries'][0]['file'], '0', 1);
+                                if ($testElement != '/') {
+                                    $href = $this->cdn . '/' . $result['media_gallery_entries'][0]['file'];
+                                } else {
+                                    $href = $this->cdn . $result['media_gallery_entries'][0]['file'];
+                                }
                                 $rules[$i]['content'] = [
-                                    urlencode($this->cdn . $result['media_gallery_entries'][0]['file'])
+
+                                    urlencode($href)
                                 ];
                             }
                         }
@@ -101,7 +108,13 @@ class CrawlerInfoLotte
                             $listImg = [];
                             if (!empty($result['media_gallery_entries'])) {
                                 foreach ($result['media_gallery_entries'] as $media) {
-                                    array_push($listImg, urlencode($this->cdn . $media['file']));
+                                    $testElementData = substr( $media['file'], '0', 1);
+                                    if ($testElementData != '/') {
+                                        $hrefData = $this->cdn . '/' .  $media['file'];
+                                    } else {
+                                        $hrefData = $this->cdn .  $media['file'];
+                                    }
+                                    array_push($listImg, urlencode($hrefData));
                                 }
                             }
                             $rules[$i]['content'] = $listImg;

@@ -78,7 +78,7 @@ class CrawlerInfoSendo
                                         ];
                                     }else if (isset($result['media'][1]) && !empty($result['media'][1]) && isset($result['media'][1]['image'])){
                                         $rules[$i]['content'] = [
-                                            urlencode($result['media'][0]['image'])
+                                            urlencode($result['media'][1]['image'])
                                         ];
                                     }
 
@@ -222,7 +222,6 @@ class CrawlerInfoSendo
                 $return['content'] = $temp;
                 $return['error'] = false;
             }
-
         } catch (\Exception $exception) {
             $return['content'] = $exception->getMessage();
         }
