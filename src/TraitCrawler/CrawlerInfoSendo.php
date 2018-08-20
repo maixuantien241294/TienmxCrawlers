@@ -48,11 +48,14 @@ class CrawlerInfoSendo
                 if (count($checkParam) > 1) {
                     $params = end($checkParam);
                 }
-
-                $linkApi = $this->api . $params;
-
+                $testElementData = substr( $params, '0', 1);
+                if ($testElementData != '/') {
+                    $linkApi = $this->api. '/' . $params;
+                } else {
+                    $linkApi = $this->api . $params;
+                }
                 $linkApi = str_replace('.html', "", $linkApi);
-
+                
                 $res = $this->__getContent($linkApi);
 
                 if ($res['http_code'] == 200) {

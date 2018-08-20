@@ -19,21 +19,22 @@ trait CrawlerTypeTrait
 {
     protected $listUserAgents = array(
 
-        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.6)    Gecko/20070725 Firefox/2.0.0.6",
-
-        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
-
-        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)",
-
-        "Opera/9.20 (Windows NT 6.0; U; en)",
-
-        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 8.50",
-
-        "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.1) Opera 7.02 [en]",
-
-        "Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; fr; rv:1.7) Gecko/20040624 Firefox/0.9",
-
-        "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/48 (like Gecko) Safari/48"
+//        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.6)    Gecko/20070725 Firefox/2.0.0.6",
+//
+//        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)",
+//
+//        "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)",
+//
+//        "Opera/9.20 (Windows NT 6.0; U; en)",
+//
+//        "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 8.50",
+//
+//        "Mozilla/4.0 (compatible; MSIE 6.0; MSIE 5.5; Windows NT 5.1) Opera 7.02 [en]",
+//
+//        "Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; fr; rv:1.7) Gecko/20040624 Firefox/0.9",
+//
+//        "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/48 (like Gecko) Safari/48",
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 
     );
 
@@ -185,6 +186,7 @@ trait CrawlerTypeTrait
 
         $newHeader = isset($data['web_header']) ? $data['web_header'] : "";
         $newUserAgents = isset($data['web_user_agents']) ? $data['web_user_agents'] : "";
+        $webId = isset($data['web_id']) ? intval($data['web_id']) : 0;
         /**
          * @desc Thêm params in trong header
          */
@@ -223,6 +225,61 @@ trait CrawlerTypeTrait
             CURLOPT_TIMEOUT => 120,      // timeout on response
             CURLOPT_MAXREDIRS => 10,       // stop after 10 redirects
             CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => 0
+        );
+        if ($webId == 31) {
+            $options[CURLOPT_SSLVERSION] = 3;
+        }
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $options);
+        $content = curl_exec($ch);
+        $err = curl_errno($ch);
+        $errmsg = curl_error($ch);
+        $header = curl_getinfo($ch);
+        curl_close($ch);
+        $header['errno'] = $err;
+        $header['errmsg'] = $errmsg;
+        $header['content'] = $content;
+        return $header;
+    }
+    public function getApiShopee($url, $head)
+    {
+        $ips = array(
+            '192.168.1.21' => '52735',
+        );
+
+        // We get a random key (IP)
+        $randomIP = array_rand($ips);
+
+        // We get the port according to the random key (IP)
+        $port = $ips[$randomIP];
+        $userAgents = $this->listUserAgents;
+        $head = $this->listHeader;
+        $random = rand(0, count($userAgents) - 1);
+        $options = array(
+
+            CURLOPT_CUSTOMREQUEST => "GET",        //set request type post or get
+//            CURLOPT_POST => false,        //set to GET
+            CURLOPT_USERAGENT => $userAgents[$random], //set user agent
+            CURLOPT_COOKIEFILE => "cookie.txt", //set cookie file
+            CURLOPT_COOKIEJAR => "cookie.txt", //set cookie jar
+            CURLOPT_RETURNTRANSFER => true,     // return web page
+            CURLOPT_HEADER => 0,    // don't return headers
+            CURLOPT_HTTPHEADER => $head,
+            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+            CURLOPT_COOKIESESSION => true,
+//            CURLOPT_INTERFACE => '192.168.0.100',
+//            CURLOPT_PORT => $port,
+//            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            CURLOPT_PROXY => "192.168.0.100",
+//            CURLOPT_PROXYPORT => 80,
+            CURLOPT_ENCODING => "",       // handle all encodings
+            CURLOPT_AUTOREFERER => true,     // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+            CURLOPT_TIMEOUT => 120,      // timeout on response
+            CURLOPT_MAXREDIRS => 10,       // stop after 10 redirects
+//            CURLOPT_HTTPPROXYTUNNEL => 0,
+            CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_SSL_VERIFYPEER => 0,
         );
         $ch = curl_init($url);
@@ -236,5 +293,54 @@ trait CrawlerTypeTrait
         $header['errmsg'] = $errmsg;
         $header['content'] = $content;
         return $header;
+    }
+
+    public function getIp()
+    {
+        return mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255) . "." . mt_rand(0, 255);
+    }
+
+    public function postApiShopee($url, $data, $head)
+    {
+        try {
+            $userAgents = $this->listUserAgents;
+
+            $random = rand(0, count($userAgents) - 1);
+            $options = array(
+
+                CURLOPT_POST => "GET",        //set request type post or get
+//            CURLOPT_POST => false,        //set to GET
+                CURLOPT_USERAGENT => $userAgents[$random], //set user agent
+                //CURLOPT_COOKIEFILE     =>"cookie.txt", //set cookie file
+                //CURLOPT_COOKIEJAR      =>"cookie.txt", //set cookie jar
+                CURLOPT_RETURNTRANSFER => true,     // return web page
+                CURLOPT_HEADER => 0,    // don't return headers
+                CURLOPT_HTTPHEADER => $head,
+                CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_PROXY => "150.95.104.211",
+                CURLOPT_PROXYPORT => 80,
+                CURLOPT_ENCODING => "",       // handle all encodings
+                CURLOPT_AUTOREFERER => true,     // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+                CURLOPT_TIMEOUT => 120,      // timeout on response
+                CURLOPT_MAXREDIRS => 10,       // stop after 10 redirects
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0,
+            );
+            $ch = curl_init($url);
+            curl_setopt_array($ch, $options);
+            $content = curl_exec($ch);
+            $err = curl_errno($ch);
+            $errmsg = curl_error($ch);
+            $header = curl_getinfo($ch);
+            curl_close($ch);
+            $header['errno'] = $err;
+            $header['errmsg'] = $errmsg;
+            $header['content'] = $content;
+            return $header;
+        } catch (\Exception $ex) {
+            return $ex->getMessage();
+        }
     }
 }
