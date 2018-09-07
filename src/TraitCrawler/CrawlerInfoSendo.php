@@ -68,8 +68,13 @@ class CrawlerInfoSendo
                             for ($i = 0; $i < count($rules); $i++) {
                                 $rules[$i]['content'] = [];
                                 if ($rules[$i]['key'] == 'pro_name') {
+                                    $name = $result['name'];
+                                    $skuName = (isset($result['sku_user']) && !empty($result['sku_user'])) ? ' - ' . $result['sku_user'] : "";
+                                    if (!empty($skuName)) {
+                                        $name = $name . $skuName;
+                                    }
                                     $rules[$i]['content'] = [
-                                        $result['name']
+                                        $name
                                     ];
                                 }
 
