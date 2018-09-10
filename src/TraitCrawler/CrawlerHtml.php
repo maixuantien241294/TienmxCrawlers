@@ -52,7 +52,7 @@ class CrawlerHtml
                 }
 
             }
-            if(!empty($htmlString)){
+            if (!empty($htmlString)) {
                 $htmlString = preg_replace("/<a\s(.+?)>(.+?)<\/a>/is", "<b>$2</b>", $htmlString);
             }
 
@@ -130,9 +130,33 @@ class CrawlerHtml
             if (count($listImg) > 0) {
                 foreach ($listImg as $key => $item) {
                     for ($j = 0; $j < count($tagsSrc); $j++) {
-                        $oldImg = $item->getAttribute(trim($tagsSrc[$j]));
+                        if ($tagsSrc[$j] == 'style') {
+                            $style = $item->getAttribute('style');
+                            $regex = '/(background-image|background):[ ]?url\([\'"]?(.*?\.(?:png|jpg|jpeg|gif))/i';
+                            $regex2 = '/background[-image]*:.*[\s]*url\(["|\']+(.*)["|\']+\)/';
+                            preg_match($regex, $style, $matches);
+
+
+                            if (isset($matches) && count($matches) > 0) {
+                                $oldImg = isset($matches[2]) ? $matches[2] : "";
+                                if (!empty($oldImg)) {
+                                    $oldImg = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $oldImg);
+                                }
+                            } else {
+                                preg_match($regex2, $style, $matches2);
+                                if (isset($matches2) && count($matches2) > 0) {
+                                    $oldImg = isset($matches2[2]) ? $matches2[2] : "";
+                                    if (!empty($oldImg)) {
+                                        $oldImg = preg_replace("/&#?[a-z0-9]{2,8};/i", "", $oldImg);
+                                    }
+                                }
+                            }
+                        } else {
+                            $oldImg = $item->getAttribute($tagsSrc[$j]);
+                        }
+//                        $oldImg = $item->getAttribute(trim($tagsSrc[$j]));
                         if (!empty($oldImg)) {
-                            $newImg = $this->__check_url($oldImg,$domain,$linkWebsite);
+                            $newImg = $this->__check_url($oldImg, $domain, $linkWebsite);
 
                             if (!empty($newImg)) {
                                 $item->setAttribute('src', $newImg);
@@ -160,7 +184,13 @@ class CrawlerHtml
 
             $tagsSrc = empty($tagsSrc) ? 'src' : $tagsSrc;
             $tagsSrc = explode(',', $tagsSrc);
-
+            if (!empty($tagsSrc)) {
+                for ($s = 0; $s < count($tagsSrc); $s++) {
+                    if (isset($tagsSrc[$s]) && $tagsSrc[$s] == 'style') {
+                        unset($tagsSrc[$s]);
+                    }
+                }
+            }
             $nodelist = $xpath->evaluate($rule);
             if ($nodelist->length > 0) {
                 foreach ($nodelist as $key => $item) {
@@ -175,7 +205,7 @@ class CrawlerHtml
                         for ($j = 0; $j < count($tagsSrc); $j++) {
                             $oldImg = $listImg->item($key)->getAttribute(trim($tagsSrc[$j]));
                             if (!empty($oldImg)) {
-                                $newImg = $this->__check_url($oldImg,$domain,$linkWebsite);
+                                $newImg = $this->__check_url($oldImg, $domain, $linkWebsite);
                                 if (!empty($newImg)) {
                                     $listImg->item($key)->setAttribute('src', $newImg);
                                 }
