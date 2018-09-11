@@ -29,7 +29,7 @@ class CrawlerMeta
                         $meta = $metas->item($i);
                         if ($meta->getAttribute('name') == 'description') {
                             $description = $meta->getAttribute('content');
-                            $description = $this->removeValue($domain, 'Muazi.vn', $description);
+//                            $description = $this->removeValue($domain, 'Muazi.vn', $description);
                             array_push($listMeta, [
                                 'key' => 'description',
                                 'name' => 'description',
@@ -40,7 +40,7 @@ class CrawlerMeta
                         }
                         if ($meta->getAttribute('name') == 'keywords') {
                             $keywords = $meta->getAttribute('content');
-                            $keywords = $this->removeValue($domain, 'Muazi.vn', $keywords);
+//                            $keywords = $this->removeValue($domain, 'Muazi.vn', $keywords);
                             array_push($listMeta, [
                                 'key' => 'keywords',
                                 'name' => 'keywords',
@@ -100,7 +100,7 @@ class CrawlerMeta
                     $title = $title->item(0);
                     $nameTitle = $title->nodeValue;
                     if(!empty($nameTitle)){
-                        $nameTitle = $this->removeValue($domain, 'Muazi.vn', $nameTitle);
+//                        $nameTitle = $this->removeValue($domain, 'Muazi.vn', $nameTitle);
                         array_push($listMeta, [
                             'key' => 'meta_title',
                             'name' => 'meta_title',
