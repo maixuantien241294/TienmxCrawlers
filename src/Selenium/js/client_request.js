@@ -28,11 +28,6 @@ var a = (async function example() {
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:'+newArray['port'][0]+'/wd/hub')
         .setFirefoxOptions(new firefox.Options().headless())
         .build();
-    if(typeof (newArray['domain'][0]) !='undefined' && (newArray['domain'][0] == 'sendo.vn')){
-        driver = await new Builder().forBrowser('firefox')
-            .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:'+newArray['port'][0]+'/wd/hub')
-            .build();
-    }
     try {
         await driver.get('' + link + '');
         /**
@@ -54,15 +49,23 @@ var a = (async function example() {
                 }
             }
         }
-        // let element = await driver.findElement(By.tagName('html'));
-        await driver.executeScript("window.scrollBy(0,2000)")
-        if(typeof (newArray['web_num_wait'][0]) !='undefined'){
-            await driver.sleep(newArray['web_num_wait'][0]);
-        }else{
-            await driver.sleep(5);
-        }
+        await driver.executeScript('window.scrollTo(0,50);',"");
+        await driver.sleep(100);
+        await driver.executeScript('window.scrollTo(0,100);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,500);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,1000);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,2000);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,2500);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,3000);',"");
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,3500);',"");
+        await driver.sleep(2000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
-
             var path = newArray['path_folder'][0];
             console.log(profile);
         }, function (err) {

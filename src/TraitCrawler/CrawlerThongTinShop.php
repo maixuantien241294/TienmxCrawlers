@@ -44,6 +44,7 @@ class CrawlerThongTinShop
     {
         $listShop = [];
         $dom = HtmlDomParser::str_get_html($contentHtml);
+        $ruleNameShop = 'div[class=_2virVN page-product__shop] div[class=Kxx4qC] div[class=_1djZB5]';
         $element = $dom->find($rule);
         if (count($element) > 0) {
             foreach ($element as $item) {
@@ -54,8 +55,13 @@ class CrawlerThongTinShop
 
                 $nameShop = "";
                 if ($domain == 'shopee.vn') {
-
-                    if (!empty($item->children(0)->children)) {
+                    $elementName = $dom->find($ruleNameShop);
+                    if (count($element) > 0) {
+                        foreach ($elementName as $itemShop) {
+                            $nameShop = trim($itemShop->text());
+                        }
+                    }
+                    if(empty($nameShop) && !empty($item->children(0)->children)){
                         if (isset($item->children(0)->children[0])) {
                             $nameShop = trim($item->children(0)->children[0]->text());
                         }

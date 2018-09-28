@@ -16,6 +16,16 @@ class CrawlerSrc
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
+    protected function listNotCrawler()
+    {
+        return [
+            'https://cdn.nguyenkimmall.com/design/themes/responsive/media/images/nk/logo_nk_top_v3.png',
+            'https://www.nguyenkim.com/images/companies/_1/Data_Price/Pic_Tags/tag-ngungkd.png',
+            'https://dienmaycholon.vn/public/default/img/2.png',
+            'https://www.nguyenkim.com/design/themes/responsive/media/images/lazy_img.jpg'
+        ];
+    }
+
     /**
      * @param $xpath
      * @param $rule
@@ -109,7 +119,9 @@ class CrawlerSrc
             $newHtmlString = [];
             if (!empty($htmlString)) {
                 foreach ($htmlString as $img) {
-                    array_push($newHtmlString, urldecode($img));
+                    if(!in_array(urldecode($img),$this->listNotCrawler())){
+                        array_push($newHtmlString, urldecode($img));
+                    }
                 }
             }
             $htmlString = !empty($newHtmlString) ? $newHtmlString : $htmlString;
@@ -232,11 +244,11 @@ class CrawlerSrc
                             }
                         }
                     }
-                    if($domain =='shopee.vn'){
+                    if ($domain == 'shopee.vn') {
                         $regex = '#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#';
                         preg_match($regex, $image, $matches);
-                        if(isset($matches) && !empty($matches)){
-                            if(isset($matches[0])){
+                        if (isset($matches) && !empty($matches)) {
+                            if (isset($matches[0])) {
                                 $image = $matches[0];
                             }
                         }

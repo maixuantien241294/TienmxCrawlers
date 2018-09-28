@@ -49,6 +49,7 @@ class Selenium
             $fullCommand = $this->nodeBinary . ' '
                 . escapeshellarg($this->executableRequest) . ' ' . $param;
         }
+        //dd($fullCommand);
         exec($fullCommand, $output, $returnVal);
 
         $content = "";
