@@ -27,7 +27,7 @@ class CrawlerThongTinShop
                         $string = $this->_parseXpath($contentHtml, $ruleHtml[$i], $linkWebsite, $domain);
                     }
                     if (!empty($string)) {
-                        if(isset($string[0])){
+                        if (isset($string[0])) {
                             array_push($listShop, $string[0]);
                         }
 
@@ -44,7 +44,11 @@ class CrawlerThongTinShop
     {
         $listShop = [];
         $dom = HtmlDomParser::str_get_html($contentHtml);
-        $ruleNameShop = 'div[class=_2virVN page-product__shop] div[class=Kxx4qC] div[class=_1djZB5]';
+        //
+        $ruleNameShop = [
+            'div[class=_2virVN page-product__shop] div[class=Kxx4qC] div[class=_1djZB5]',
+            'div[class=_1zBnTu page-product__shop] div[class=_1Sw6Er] div[class=_2S9T8Y] div[class=_3Lybjn]'
+        ];
         $element = $dom->find($rule);
         if (count($element) > 0) {
             foreach ($element as $item) {
@@ -55,18 +59,21 @@ class CrawlerThongTinShop
 
                 $nameShop = "";
                 if ($domain == 'shopee.vn') {
-                    $elementName = $dom->find($ruleNameShop);
-                    if (count($element) > 0) {
-                        foreach ($elementName as $itemShop) {
-                            $nameShop = trim($itemShop->text());
+                    for ($i = 0; $i < count($ruleNameShop); $i++) {
+                        $elementName = $dom->find($ruleNameShop[$i]);
+                        if (count($element) > 0) {
+                            foreach ($elementName as $itemShop) {
+                                $nameShop = trim($itemShop->text());
+                            }
                         }
                     }
-                    if(empty($nameShop) && !empty($item->children(0)->children)){
+
+                    if (empty($nameShop) && !empty($item->children(0)->children)) {
                         if (isset($item->children(0)->children[0])) {
                             $nameShop = trim($item->children(0)->children[0]->text());
                         }
                     }
-                }elseif ($domain == 'lotte.vn') {
+                } elseif ($domain == 'lotte.vn') {
                     $elementName = $dom->find('div[class=product-right-content] div[class=inner-content] ul li[class=sell-by] p a strong[class=seller-name]');
                     if (count($elementName) > 0) {
                         foreach ($elementName as $itemName) {

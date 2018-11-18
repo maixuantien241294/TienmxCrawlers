@@ -81,7 +81,7 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if (in_array($key, ['dom_click', 'link', 'port','domain','web_num_wait'])) {
+            if (in_array($key, ['dom_click', 'link', 'port', 'domain', 'web_num_wait','current', 'page'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";

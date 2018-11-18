@@ -49,6 +49,7 @@ class CrawlerText
         $htmlString = "";
         $dom = HtmlDomParser::str_get_html($contentHtml);
         $element = $dom->find($rule);
+
         if (count($element) > 0) {
             foreach ($element as $item) {
                 $htmlString = $item->text();

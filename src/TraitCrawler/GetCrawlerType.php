@@ -21,6 +21,8 @@ class GetCrawlerType
     public $misdn = 'phone_number';
     public $thong_so_ky_thuat = 'thong_so_ky_thuat';
     public $thong_tin_shop = 'thong_tin_shop';
+    public $giao_trinh = 'giao_trinh';
+    public $link = 'link';
     public $crawlerUrl = 1;
     public $crawlerGetContent = 2;
     public $crawlerPhantomjs = 4;
@@ -50,6 +52,7 @@ class GetCrawlerType
             }
             $temp = [];
             foreach ($rules as $k => $val) {
+                
                 $htmlString = "";
                 $valueRemove = isset($val['value_remove']) ? $val['value_remove'] : "";
                 $valueRemoveXpath = isset($val['value_remove_xpath']) ? $val['value_remove_xpath'] : "";
@@ -97,7 +100,7 @@ class GetCrawlerType
                     case $this->src:
                         $cSrc = new CrawlerSrc();
                         if (!empty($val['value'])) {
-                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg,$webRuleImgSpec, $download);
+                            $htmlString = $cSrc->executeSrc($contentHtml, $val['value'], $tagsSrc, $linkWebsite, $domain, $valueRemove, $replaceImg, $webRuleImgSpec, $download);
                         } else {
                             $htmlString = "";
                         }
@@ -135,6 +138,15 @@ class GetCrawlerType
                         if (!empty($query)) {
                             $htmlString = $cThongTinShop->executeInfoShop($contentHtml, $query, $linkWebsite, $domain);
                         }
+                        break;
+                    case  $this->giao_trinh:
+                        $cGiaoTrinh = new CrawlerGiaoTrinh();
+                        $htmlString = $cGiaoTrinh->executeGiaoTrinh($contentHtml, $domain, $val);
+                        break;
+                    case $this->link:
+                        $query = $val['value'];
+                        $cLink = new CrawlerLink();
+                        $htmlString = $cLink->executeLink($contentHtml, $domain,$linkWebsite, $query);
                         break;
                 }
                 $rules[$k]['content'] = $htmlString;
@@ -178,6 +190,7 @@ class GetCrawlerType
         } catch (\Exception $exception) {
             $return['message'] = $exception->getMessage();
         }
+
         return $return;
     }
 
