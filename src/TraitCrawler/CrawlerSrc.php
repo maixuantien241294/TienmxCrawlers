@@ -22,7 +22,8 @@ class CrawlerSrc
             'https://cdn.nguyenkimmall.com/design/themes/responsive/media/images/nk/logo_nk_top_v3.png',
             'https://www.nguyenkim.com/images/companies/_1/Data_Price/Pic_Tags/tag-ngungkd.png',
             'https://dienmaycholon.vn/public/default/img/2.png',
-            'https://www.nguyenkim.com/design/themes/responsive/media/images/lazy_img.jpg'
+            'https://www.nguyenkim.com/design/themes/responsive/media/images/lazy_img.jpg',
+            'https://laz-img-cdn.alicdn.com/tfs/TB1oP2bbQvoK1RjSZFNXXcxMVXa-300-200.png'
         ];
     }
 
@@ -119,7 +120,7 @@ class CrawlerSrc
             $newHtmlString = [];
             if (!empty($htmlString)) {
                 foreach ($htmlString as $img) {
-                    if(!in_array(urldecode($img),$this->listNotCrawler())){
+                    if (!in_array(urldecode($img), $this->listNotCrawler())) {
                         array_push($newHtmlString, urldecode($img));
                     }
                 }
