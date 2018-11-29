@@ -53,7 +53,14 @@ class CrawlerHtml
 
             }
             if (!empty($htmlString)) {
-                $htmlString = preg_replace("/<a\s(.+?)>(.+?)<\/a>/is", "<b>$2</b>", $htmlString);
+                $htmlString = trim($htmlString);
+                if($domain =='shopee.vn'){
+                    $htmlString = preg_replace("/<a\s(.+?)>(.+?)<\/a>/is", "<b>$2</b>", $htmlString);
+                }else{
+                    $htmlString = preg_replace("/<a\s(.+?)>(.+?)<\/a>/is", "<span>$2</span>", $htmlString);
+                }
+
+                $htmlString = preg_replace('/\r?\n|\r/', '<br/>', $htmlString);
             }
 
         } catch (\Exception $exception) {

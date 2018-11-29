@@ -164,13 +164,14 @@ trait CrawlerTypeTrait
             $result = $browser->html($data, $server);
             if ($result['returnVal'] === 0) {
                 $content = $result['ouput'];
-                if ($server == 1) {
-                    $return['content'] = $content;
-                } else {
-                    $content = implode('', $content);
-                    $return['content'] = $content;
-                }
                 $return['content'] = $content;
+//                if ($server == 1) {
+//
+//                } else {
+//                    $content = implode('', $content);
+//                    $return['content'] = $content;
+//                }
+//                $return['content'] = $content;
                 $return['errors'] = false;
             }
         } catch (\Exception $exception) {

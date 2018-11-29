@@ -28,7 +28,7 @@ var link = newArray.link
 var a = (async function example() {
     let driver = await new Builder().forBrowser('firefox')
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:' + newArray['port'][0] + '/wd/hub')
-        // .setFirefoxOptions(new firefox.Options().headless())
+        .setFirefoxOptions(new firefox.Options().headless())
         .build();
     try {
         await driver.get('' + link + '');

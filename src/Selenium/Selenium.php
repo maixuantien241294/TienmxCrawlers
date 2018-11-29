@@ -41,37 +41,37 @@ class Selenium
         }
         $param = $this->getParams($config);
         $this->config = $this->merge($this->config, $config);
-        if ($server == 1) {
-            $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE', '/var/www/crawler.muazi.vn/storage/app/');
-            $fullCommand = $this->nodeBinary . ' '
-                . escapeshellarg($this->executableServer) . ' ' . $param;
-        } else {
-            $fullCommand = $this->nodeBinary . ' '
-                . escapeshellarg($this->executableRequest) . ' ' . $param;
-        }
+
+        $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE', '/var/www/crawler.muazi.vn/storage/app/');
+        $fullCommand = $this->nodeBinary . ' '
+            . escapeshellarg($this->executableServer) . ' ' . $param;
+//        if ($server == 1) {
+//
+//        } else {
+//            $fullCommand = $this->nodeBinary . ' '
+//                . escapeshellarg($this->executableRequest) . ' ' . $param;
+//        }
         exec($fullCommand, $output, $returnVal);
 
         $content = "";
-        if ($server == 1) {
-            if ($returnVal == 0) {
-                if (\Storage::exists('download_file_' . $config['port'] . '.php')) {
-                    $content = \Storage::get('download_file_' . $config['port'] . '.php');
-                    /**
-                     * remove file
-                     */
-//                    \Storage::put('download_file.php', "");
-                }
+        if ($returnVal == 0) {
+            if (\Storage::exists('download_file_' . $config['port'] . '.php')) {
+                $content = \Storage::get('download_file_' . $config['port'] . '.php');
+                file_put_contents(env('PATH_SAVE_FILE', '/var/www/crawler.muazi.vn/storage/app/') . 'download_file_' . $config['port'] . '.php', "");
             }
-            $result = [
-                'ouput' => $content,
-                'returnVal' => $returnVal
-            ];
-        } else {
-            $result = [
-                'ouput' => $output,
-                'returnVal' => $returnVal
-            ];
         }
+        $result = [
+            'ouput' => $content,
+            'returnVal' => $returnVal
+        ];
+//        if ($server == 1) {
+//
+//        } else {
+//            $result = [
+//                'ouput' => $output,
+//                'returnVal' => $returnVal
+//            ];
+//        }
 
         return $result;
     }
@@ -80,7 +80,7 @@ class Selenium
     {
         $param = "";
         foreach ($config as $key => $item) {
-            if (in_array($key, ['dom_click', 'link', 'port', 'domain', 'web_num_wait','current', 'page'])) {
+            if (in_array($key, ['dom_click', 'link', 'port', 'domain', 'web_num_wait', 'current', 'page'])) {
                 if (in_array($key, ['dom_click'])) {
                     if (!empty($config[$key])) {
                         $xpath = "";
