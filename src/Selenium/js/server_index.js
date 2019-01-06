@@ -1,5 +1,6 @@
 const {Builder, By, Key, until} = require('selenium-webdriver');
 var firefox = require('selenium-webdriver/firefox');
+var chrome = require('selenium-webdriver/chrome');
 var fs = require('fs');
 var newArray = {
     link: [],
@@ -26,9 +27,10 @@ var startTime = da.getTime();
 var content = '';
 var link = newArray.link
 var a = (async function example() {
-    let driver = await new Builder().forBrowser('firefox')
+    let driver = await new Builder().forBrowser('chrome')
         .usingServer(process.env.SELENIUM_REMOTE_URL || 'http://localhost:' + newArray['port'][0] + '/wd/hub')
-        .setFirefoxOptions(new firefox.Options().headless())
+        // .setFirefoxOptions(new firefox.Options().headless())
+        .setChromeOptions(new chrome.Options().headless())
         .build();
     try {
         await driver.get('' + link + '');
@@ -81,19 +83,19 @@ var a = (async function example() {
         await driver.executeScript('window.scrollTo(0,50);', "");
         await driver.sleep(100);
         await driver.executeScript('window.scrollTo(0,100);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,500);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,1000);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,2000);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,2500);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,3000);', "");
-        await driver.sleep(500);
+        await driver.sleep(400);
         await driver.executeScript('window.scrollTo(0,3500);', "");
-        await driver.sleep(2000);
+        await driver.sleep(400);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file_' + newArray['port'][0] + '.php', profile);

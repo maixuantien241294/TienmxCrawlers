@@ -16,8 +16,47 @@ class CrawlerHtml
     public $isDownload = 1; //crawler để download
     public $notDownload = 2;// crawler không đownload
 
-    public function executeHtml($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download)
+    public  function remove_html($description)
     {
+        $description = preg_replace('/(<[^>]+) style.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) class.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) id.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) link.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) width.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) height.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace('/(<[^>]+) href.*?=.*?".*?"/i', '$1', $description);
+        $description = preg_replace("/<script.*?\/script>/s", "", $description);
+        $description = preg_replace("/<iframe.*?\/iframe>/i", "", $description);
+        $description = preg_replace("/<input.*?\/>/i", "", $description);
+        $description = preg_replace("/<select.*?\/select>/s", "", $description);
+        $description = preg_replace("/<textarea.*?\/textarea>/s", "", $description);
+        $description = preg_replace("/<form.*?\/form>/s", "", $description);
+        $description = preg_replace("/<button.*?\/button>/s", "", $description);
+        return $description;
+    }
+    public function executeHtml($contentHtml, $rule, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download,$linkCrawler="")
+    {
+
+        if (($domain == 'weshop.com.vn')) {
+            $expLink = explode('-', $linkCrawler);
+            $endLink = end($expLink);
+            $expEndLink = explode('.', $endLink);
+            $idWebSite = isset($expEndLink[0]) ? $expEndLink[0] : 0;
+            $expLinkDomain = explode('/item/', $linkCrawler);
+            $linkDefault = isset($expLinkDomain[0]) ? $expLinkDomain[0] : 'https://weshop.com.vn/ebay';
+            $linkDesc = $linkDefault . '/product-description-' . $idWebSite . '.html';
+            $dataDesc = [
+                'link' => $linkDesc,
+                'type' => 1,
+                'dom_click' => "",
+                'web_num_wait' => 0
+            ];
+            $rawlerType = new GetCrawlerType(env('WGET_CMD'), env('UPLOAD_FULL_PATH', ''), env('URL_FILE', ''));
+
+            $contentHtml = $rawlerType->crawlerHtml($dataDesc);
+            $contentHtml = isset($contentHtml['message']) ? $contentHtml['message'] : "";
+
+        }
         $htmlString = "";
         $linkWebsite = $this->getUrl($linkWebsite);
         try {
@@ -62,7 +101,7 @@ class CrawlerHtml
 
                 $htmlString = preg_replace('/\r?\n|\r/', '<br/>', $htmlString);
             }
-
+            $htmlString = $this->remove_html($htmlString);
         } catch (\Exception $exception) {
             dd($exception->getMessage());
         }

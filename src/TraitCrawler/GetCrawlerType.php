@@ -41,8 +41,9 @@ class GetCrawlerType
     }
 
 
-    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $replaceImg = [], $webRuleImgSpec, $showArray = 0)
+    public function getData($contentHtml, $cateId = "", $tagsSrc, $rules, $linkWebsite, $domain, $download, $replaceImg = [], $webRuleImgSpec, $showArray = 0,$linkCrawler = "")
     {
+
         $linkWebsite = $this->getUrl($linkWebsite);
         $return = ['error' => true, 'message' => "lỗi hệ thống", 'content' => ""];
         try {
@@ -52,7 +53,8 @@ class GetCrawlerType
             }
             $temp = [];
             foreach ($rules as $k => $val) {
-                
+                $descLink = $linkCrawler;
+
                 $htmlString = "";
                 $valueRemove = isset($val['value_remove']) ? $val['value_remove'] : "";
                 $valueRemoveXpath = isset($val['value_remove_xpath']) ? $val['value_remove_xpath'] : "";
@@ -91,7 +93,7 @@ class GetCrawlerType
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
                         if (!empty($query)) {
-                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download,$descLink);
                         } else {
                             $htmlString = "";
                         }
@@ -110,7 +112,7 @@ class GetCrawlerType
                         $query = $val['value'];
                         $cHtml = new CrawlerHtml();
                         if (!empty($query)) {
-                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download);
+                            $htmlString = $cHtml->executeHtml($contentHtml, $query, $tagsSrc, $linkWebsite, $domain, $valueRemove, $valueRemoveXpath, $valueRemoveBlock, $download,$descLink);
                         } else {
                             $htmlString = "";
                         }
