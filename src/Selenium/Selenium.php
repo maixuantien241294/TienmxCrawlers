@@ -9,7 +9,10 @@ class Selenium
     public $nodeBinary;
     public $configDefine = 'MqFPJ3HnAV';
     public $executableServer;
+    public $executableCategory;
     public $executableRequest;
+    public $cate = 2;
+    public $detail = 1;
 
     public function __construct()
     {
@@ -22,6 +25,7 @@ class Selenium
         $this->executable = __DIR__ . '/js/index.js';
         $this->executableServer = __DIR__ . '/js/server_index.js';
         $this->executableServerRequest = __DIR__ . '/js/server_request.js';
+        $this->executableCategory = __DIR__ . '/js/server_category.js';
         ini_set('max_execution_time', 1300);
         set_time_limit(1300);
     }
@@ -41,16 +45,11 @@ class Selenium
         }
         $param = $this->getParams($config);
         $this->config = $this->merge($this->config, $config);
-
+        $type_crawler = isset($config['type_crawler']) ? $config['type_crawler'] : $this->detail;
+        $url_dir = ($type_crawler == $this->detail) ? $this->executableServer : $this->executableCategory;
         $param = $param . ' path_folder' . $this->configDefine . env('PATH_SAVE_FILE', '/var/www/crawler.muazi.vn/storage/app/');
         $fullCommand = $this->nodeBinary . ' '
-            . escapeshellarg($this->executableServer) . ' ' . $param;
-//        if ($server == 1) {
-//
-//        } else {
-//            $fullCommand = $this->nodeBinary . ' '
-//                . escapeshellarg($this->executableRequest) . ' ' . $param;
-//        }
+            . escapeshellarg($url_dir) . ' ' . $param;
         exec($fullCommand, $output, $returnVal);
 
         $content = "";

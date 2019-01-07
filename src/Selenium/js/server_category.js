@@ -83,18 +83,19 @@ var a = (async function example() {
         await driver.executeScript('window.scrollTo(0,50);', "");
         await driver.sleep(100);
         await driver.executeScript('window.scrollTo(0,100);', "");
-        await driver.sleep(400);
+        await driver.sleep(500);
         await driver.executeScript('window.scrollTo(0,500);', "");
-        await driver.sleep(400);
+        await driver.sleep(500);
         await driver.executeScript('window.scrollTo(0,1000);', "");
-        await driver.sleep(400);
+        await driver.sleep(500);
         await driver.executeScript('window.scrollTo(0,2000);', "");
-        await driver.sleep(400);
+        await driver.sleep(500);
         await driver.executeScript('window.scrollTo(0,2500);', "");
-        await driver.sleep(400);
+        await driver.sleep(500);
         await driver.executeScript('window.scrollTo(0,3000);', "");
-        await driver.sleep(400);
-        
+        await driver.sleep(500);
+        await driver.executeScript('window.scrollTo(0,3500);', "");
+        await driver.sleep(1000);
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file_' + newArray['port'][0] + '.php', profile);
