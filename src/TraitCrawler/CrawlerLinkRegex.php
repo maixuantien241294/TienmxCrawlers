@@ -92,7 +92,6 @@ class CrawlerLinkRegex
                 }
 
             }
-            dd($temp);
             if (!empty($temp)) {
                 $return['error'] = false;
                 $return['data'] = $temp;
