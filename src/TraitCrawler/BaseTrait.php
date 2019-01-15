@@ -25,20 +25,22 @@ trait BaseTrait
         }
         return $ruleParse;
     }
-    public function is_image($path)    {
-        if(!empty($path)){
+
+    public function is_image($path)
+    {
+        if (!empty($path)) {
             $a = getimagesize($path);
-            if(isset( $a[2])){
-                $image_type = $a[2];            
-                if(in_array($image_type , array(IMAGETYPE_GIF , IMAGETYPE_JPEG ,IMAGETYPE_PNG , IMAGETYPE_BMP)))
-                {
-                    return true;            
-                }        
+            if (isset($a[2])) {
+                $image_type = $a[2];
+                if (in_array($image_type, array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP))) {
+                    return true;
+                }
             }
         }
-                
-        return false;    
+
+        return false;
     }
+
     public function getRuleHtml($rule)
     {
         $listRule = [];
@@ -250,7 +252,6 @@ trait BaseTrait
         } else {
 
             $parse = parse_url($href);
-
             if (!isset($parse['host'])) {
 
                 $testElement = substr($href, '0', 1);
@@ -260,22 +261,39 @@ trait BaseTrait
                     $href = $linkWeb . $href;
                 }
             } else {
-
-
                 $scheme = isset($parse['scheme']) ? $parse['scheme'] : "";
                 $host = isset($parse['host']) ? $parse['host'] : "";
                 $path = isset($parse['path']) ? $parse['path'] : "";
+                $query = isset($parse['query']) ? $parse['query'] : "";
 
                 if (!empty($path)) {
                     $testPath = substr($path, '0', 2);
                     $path = ($testPath != "..") ? $path : substr($path, 2, strlen($path));
-                }
-                if(!empty($scheme)){
-                    $href = $scheme . '://' . $host . $path;
-                }else{
-                    $href = '//' . $host . $path;
+                    if (!empty($query)) {
+                        $path = $path . '?' . $query;
+                    }
                 }
 
+                if (!empty($scheme)) {
+                    $href = $scheme . '://' . $host . $path;
+                } else {
+                    $href = '//' . $host . $path;
+                }
+                if (in_array($domain, ['robins.vn', '131mobile.vn'])) {
+                    if ($domain == 'robins.vn') {
+                        $regexNew = '#http://static-catalog.robins.vn/[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#i';
+                    } elseif ($domain == '131mobile.vn') {
+                        $regexNew = '#http://131mobile.vn/uploads/[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#i';
+                    }
+                    preg_match($regexNew, $href, $matchnew);
+                    if (isset($matchnew[0])) {
+                        preg_match('/(jpg|jpeg|png|JPG|PNG|JPEG|GIF|gif)/', $matchnew[0], $matchImg);
+                        if(!empty($matchImg)){
+                            $href = $matchnew[0];
+                        }
+                    }
+
+                }
             }
             if (!preg_match("~^(?:f|ht)tps?://~i", $href)) {
                 $href = "http:" . $href;
@@ -300,8 +318,7 @@ trait BaseTrait
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "GET",
                 CURLOPT_POSTFIELDS => "id=50132",
-                CURLOPT_HTTPHEADER => array(
-//                    "If-none-match-: 55b03-987390ecdcf5cfd8f45c6dcbc4599dda"
+                CURLOPT_HTTPHEADER => array(//                    "If-none-match-: 55b03-987390ecdcf5cfd8f45c6dcbc4599dda"
                 ),
             ));
 
