@@ -37,11 +37,23 @@ class CrawlerLinkRegex
     {
         $return = ['message' => "", 'error' => true, 'data' => []];
         try {
-            preg_match_all($this->rules, $content, $matchs);
+            $html = new \DOMDocument();
+            @$html->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $content);
+            $crawler = new \DOMXPath($html);
+            $nodelist = $crawler->query($this->rule_tag_a);
+            $newHtml = [];
+            if (!empty($nodelist)) {
+                foreach ($nodelist as $item) {
+                    $href = trim($item->getAttribute('href'));
+                    if (!empty($href)) {
+                        array_push($newHtml, $href);
+                    }
+                }
+            }
             $temp = [];
-            if (count($matchs) > 1) {
-                $link = isset($matchs[0]) ? $matchs[0] : [];
-                $link = array_unique($link);
+            if (!empty($newHtml)) {
+                $newHtml = array_unique($newHtml);
+                $link  = preg_grep ($this->rules, $newHtml);
                 $link = $this->required_url($link);
                 if (!empty($link)) {
                     foreach ($link as $href) {
@@ -90,7 +102,6 @@ class CrawlerLinkRegex
 
                     }
                 }
-
             }
             if (!empty($temp)) {
                 $return['error'] = false;
@@ -98,7 +109,6 @@ class CrawlerLinkRegex
                 $return['message'] = MSG_SUCCESS;
             }
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             $return['message'] = $exception->getMessage();
         }
         return $temp;
