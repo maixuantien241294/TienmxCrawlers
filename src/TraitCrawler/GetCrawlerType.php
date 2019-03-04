@@ -52,6 +52,7 @@ class GetCrawlerType
                 return $return;
             }
             $temp = [];
+
             foreach ($rules as $k => $val) {
                 $descLink = $linkCrawler;
 

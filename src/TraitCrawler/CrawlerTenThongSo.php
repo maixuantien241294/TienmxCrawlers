@@ -13,6 +13,7 @@ use Sunra\PhpSimple\HtmlDomParser;
 class CrawlerTenThongSo
 {
     use BaseTrait;
+    public $regexReplace = ['*', '-', '_', '#', ':', '.'];
 
     public function crawler($contentHtml, $domain, $queryAll)
     {
@@ -39,11 +40,10 @@ class CrawlerTenThongSo
         if (count($element) > 0) {
             foreach ($element as $item) {
                 if (!empty($item->text())) {
-                    $text = $item->text();
-//                    if ($domain == 'hc.com.vn') {
-//                        $text = utf8_decode($item->text());
-//                    }
-                    array_push($temp, trim($text));
+                    $text = preg_replace('/\s\s+/', ' ', trim($item->text()));
+                    $text = str_replace($this->regexReplace, ' ', $text);
+                    $text = mb_strtolower(trim($text), 'UTF-8');
+                    array_push($temp, $text);
                 }
             }
         }

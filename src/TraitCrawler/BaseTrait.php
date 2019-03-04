@@ -14,6 +14,7 @@ trait BaseTrait
     public $saveFolder = "";
     public $wget = "";
     public $urlFile = "";
+    public $regexReplaceContent = ['*', '-', '_', '#', ':', '.', '+', "\'", '"'];
 
     public function getRules($rule)
     {
@@ -288,7 +289,7 @@ trait BaseTrait
                     preg_match($regexNew, $href, $matchnew);
                     if (isset($matchnew[0])) {
                         preg_match('/(jpg|jpeg|png|JPG|PNG|JPEG|GIF|gif)/', $matchnew[0], $matchImg);
-                        if(!empty($matchImg)){
+                        if (!empty($matchImg)) {
                             $href = $matchnew[0];
                         }
                     }
@@ -338,5 +339,42 @@ trait BaseTrait
         } catch (\Exception $ex) {
             return $ex->getMessage();
         }
+    }
+
+    public function keyword_remove()
+    {
+        $reject_keyword = array('mua', 'rẻ', 'giá', 'bán', 'nhưng', 'xách', ' ở ', 'triệu',
+            'nhất', 'vào', 'vô', 'phim', 'tốt', 'mới', 'của', 'là gì', 'trả', 'góp',
+            'yêu', 'trâu', 'khủng', 'động', 'full', 'không', 'like', 'cổ', 'hà', 'nội',
+            'mọi', 'vui', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021',
+            'mẹ', 'nguyen', 'lazada', 'tiki', 'vatgia', 'sendo', 'shopee', 'quả', 'quốc', 'quân', 'quay',
+            'tầm', 'tai thỏ', 'tai tho', 'tràn', 'thegioi', 'fpt', 'sim', 'treo', 'xuống', 'mất', 'chai', 'tháng', 'tại',
+            'ý', 'quận', 'tỉnh', 'lừa', 'bị', 'đơ', 'ngoai', 'ngoài', 'gập', 'nào', 'hãng', 'review', 'xach', 'viễn', 'moi',
+            'nhận', 'chống', 'bts', 'nhái', 'nhai', 'tphcm', 'gia', 'tinhte', 'yếu', 'facebook', 'rồi', 'yếu', 'đà nẵng',
+            'hải dương', 'hà nội', 'chiết khấu', 'chạy chậm', 'chập chờn', 'vỡ kính', 'bắt được', 'facebook', 'tài khoản', 'với', 'khong duoc'
+        , 'không được', 'lên', 'san xuat', 'sản xuất', 'gì', 'làm gì', 'trang chủ');
+        return $reject_keyword;
+    }
+
+    public function replace_text($textA)
+    {
+        $textA = trim(mb_strtolower($textA, 'UTF-8'));
+        $textA = str_replace('*', ' ', $textA);
+        $textA = str_replace('-', ' ', $textA);
+        $textA = str_replace('#', ' ', $textA);
+        $textA = str_replace('_', ' ', $textA);
+        $textA = str_replace('&', ' ', $textA);
+        $textA = str_replace('%', ' ', $textA);
+        $textA = str_replace(':', ' ', $textA);
+        $textA = str_replace('.', ' ', $textA);
+        $textA = str_replace('+', ' ', $textA);
+        $textA = str_replace("\'", ' ', $textA);
+        $textA = str_replace('"', ' ', $textA);
+        $textA = preg_replace('/\(.*\)/U', '', $textA);
+        $textA = preg_replace('/\s\s+/', ' ', $textA);
+        $textA = preg_replace('/\[.*\]/U', '', $textA);
+        $textA = preg_replace('/\{.*\}/U', '', $textA);
+
+        return trim($textA);
     }
 }
