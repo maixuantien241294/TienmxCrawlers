@@ -98,6 +98,7 @@ var a = (async function example() {
         await driver.findElement(By.tagName('html')).getAttribute("innerHTML").then(function (profile) {
             var path = newArray['path_folder'][0];
             fs.writeFileSync(path + 'download_file_' + newArray['port'][0] + '.php', profile);
+            fs.writeFileSync(path + 'detail.html', profile);
             // console.log(profile);
         }, function (err) {
             console.log('Not get content');

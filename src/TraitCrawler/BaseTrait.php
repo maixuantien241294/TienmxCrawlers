@@ -370,6 +370,7 @@ trait BaseTrait
         $textA = str_replace('+', ' ', $textA);
         $textA = str_replace("\'", ' ', $textA);
         $textA = str_replace('"', ' ', $textA);
+        $textA = str_replace('/', ' ', $textA);
         $textA = preg_replace('/\(.*\)/U', '', $textA);
         $textA = preg_replace('/\s\s+/', ' ', $textA);
         $textA = preg_replace('/\[.*\]/U', '', $textA);
